@@ -1,0 +1,32 @@
+name: server tuning
+
+on:
+  push:
+    tags:
+      - 'v.*.*'
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: sed 
+        run: cat secret1.json | sed -i -e 's|ROOT|'${{ secrets.ROOT }}'|g' secret1.json -i -e 's|BOT1|'${{ secrets.BOT }}'|g' secret1.json -i -e 's|LOGFOIL|'${{ secrets.LOGIN_ROOT }}'|g' secret1.json -i -e 's|FPASSW|'${{ secrets.PASS_ROOT }}'|g' secret1.json -i -e 's|DEPLOY_SERVER_KEY|'${{ secrets.DEPLOY_SERVER_KEY }}'|g' secret1.json
+
+      - name: install authorized key id_rsa.pub
+        env:
+          DEPLOY_SERVER_KEY: ${{ secrets.DEPLOY_SERVER_KEY }}
+        run: echo $DEPLOY_SERVER_KEY | base64 --decode > key | chmod 0600 key
+
+      - name: test1
+        run: python3 test1.py
+
+      # - name: run playbook
+      #   env:
+      #     ANSIBLE_HOST_KEY_CHECKING: False
+      #   run: ansible-playbook -i inventory.yml renew.yml --extra-vars "@secret1.json"
+
+          

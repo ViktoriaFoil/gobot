@@ -1,0 +1,100 @@
+---
+- name: tournament_go
+  hosts: all
+  become_method: sudo
+  become: yes
+  become_user: root
+
+  vars:
+
+    mysql_packages:
+      - mariadb-client
+      - mariadb-server
+      - python3-mysqldb
+
+    mysql_enabled_on_startup: true
+
+    mysql_databases:
+      - name: tournament_go
+    mysql_users:
+      - name: foilv
+        host: "%"
+        password: ""
+        priv: '*.*:ALL,GRANT'
+
+    #ansible_user: "{{ newuser }}"
+    #ansible_ssh_private_key: "{{ key }}"
+    #ansible_port: 22
+    #ansible_connection: ssh
+    #ansible_ssh_extra_args: '-o StrictHostKeyChecking=no'
+  
+  pre_tasks:
+
+  - name: install 
+    ansible.builtin.package: 
+      name: 
+        - python3-pip
+        - python3-jmespath
+        - ca-certificates
+        - curl
+        - gnupg2
+        - lsb-release
+        - python3-docker
+        - python3-pymysql
+        - python3-apt
+
+  - name: Install bottle python package
+    pip:
+      name: 
+        - docker-py
+
+  tasks:
+
+  - name: create user
+    user:
+      name: ""
+      password: ""
+
+  - name: pull an image
+    docker_image:
+      name: foilv/tournaments_go
+      tag: bot17
+      source: pull
+
+  - name: Creates directory
+    file:
+      path: /appBot
+      state: directory
+      owner: foilv
+      group: foilv
+      mode: '0644'
+
+  - name: Copy file with owner and permissions
+    ansible.builtin.copy:
+      src: tournament_go.sql
+      dest: /appBot
+      owner: foilv
+      group: foilv
+      mode: '0644'
+   
+  - name: Restore database
+    mysql_db:
+      name: tournament_go
+      state: import
+      target: /appBot/tournament_go.sql
+
+  - name: start a container
+    community.docker.docker_container:
+      name: Bot
+      image: foilv/tournaments_go:bot17
+      state: started
+      env:
+        HOST: ""
+        USER: ""
+        PASSWORD: ""
+        DATABASE: ""
+        BOT: ""
+
+  roles:
+    - geerlingguy.docker 
+    - geerlingguy.mysql
