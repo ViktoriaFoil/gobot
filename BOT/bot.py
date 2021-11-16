@@ -9,7 +9,6 @@ import mysql_dbconfig as db
 from log import log
 
 # Переменные для подключения к БД
-db.conn, db.cursor = db.connect_db()
 
 token = os.getenv("BOT")
 bot = telebot.TeleBot(token)
@@ -226,14 +225,16 @@ def push_message():
         for new_tournaments in main.get_new_tournaments(): # новые турниры
             for UserCity in main.get_user_subscription_city(): # подписки на города пользователей
                 if new_tournaments[3] == UserCity[1]: # если id города из новых турниров ровно id города в подписках, то
-                    userId = UserCity[0]
-                    if(main.is_user_child(userId)): #если пользователь ребенок, отправлять все турниры
-                        for tournament in main.tournaments_for_user(UserCity[1]): #запрос строки на отправку турнира
-                            bot.send_message(main.getChatIdByUserId(UserCity[0]), "В твоем городе появился турнир \n" + tournament) #отправить
+                    #userId = UserCity[0]
+                    if(main.is_user_child(UserCity[0])): #если пользователь ребенок, отправлять все турниры
+                        for tournament in main.tournaments_for_user(UserCity[0]): #запрос строки на отправку турнира
+                            chatID = main.getChatIdByUserId(UserCity[0])
+                            bot.send_message(chatID, "В твоем городе появился турнир \n\n" + tournament) #отправить
                             log(message.chat.id, "a new children's tournament has been sent", logging.INFO)
-                    else: # иначе пользователь взрослый 
-                        for tournament in main.tournaments_for_user_adult(UserCity[1]): #запрос строки на отправку турнира
-                            bot.send_message(main.getChatIdByUserId(UserCity[0]), "В твоем городе появился турнир \n" + tournament) #отправить
+                    else: # иначе пользователь взрослый
+                        for tournament in main.tournaments_for_user_adult(UserCity[0]): #запрос строки на отправку турнира
+                            chatID = main.getChatIdByUserId(UserCity[0])
+                            bot.send_message(chatID, "В твоем городе появился турнир \n\n" + tournament) #отправить
                             log(message.chat.id, "new tournament sent", logging.INFO)
 
     except Exception as e:
@@ -257,7 +258,7 @@ def background():
         main.delete_old_tournaments(),  # удаление устаревших по дате турниров из основной таблицы
         log(0, "stop cycle for 300 seconds", logging.INFO)
         
-        time.sleep(300)
+        time.sleep(20)
 
 
 if __name__ == '__main__':
