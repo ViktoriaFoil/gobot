@@ -8,6 +8,9 @@ import logging
 import mysql_dbconfig as db
 from log import log
 
+# Переменные для подключения к БД
+db.conn, db.cursor = db.connect_db()
+
 token = os.getenv("BOT")
 bot = telebot.TeleBot(token)
 state = "city_selection"

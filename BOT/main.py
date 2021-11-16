@@ -1,7 +1,6 @@
 import requests
 import os
 from bs4 import BeautifulSoup
-from mysql.connector import Error
 from datetime import date 
 import tournament
 import datetime
@@ -81,7 +80,7 @@ def insert_tournament(tournaments): #добавляет турниры в баз
             cityId = int(getCityIdByName(tour.city))
             db.cursor.execute(query, [tour.start, tour.end, tour.name, cityId, tour.link, tour.flag])
             db.conn.commit()
-        except Error as e:
+        except BaseException as e:
             bot.log(0, "error insert tournament: " + str(e), logging.ERROR)
 
 def main(): #связывает 2 функции insert_tournament и getText
@@ -89,7 +88,7 @@ def main(): #связывает 2 функции insert_tournament и getText
         tournaments = getText()
         insert_tournament(tournaments)
         bot.log(0, "successful entry of new tournaments into the database", logging.INFO)
-    except Error as e:
+    except BaseException as e:
         bot.log(0, "error main: " + str(e), logging.ERROR)
 
 def getText(): #получает текст для вставки новых турниров в базу данных
@@ -137,7 +136,7 @@ def getText(): #получает текст для вставки новых т�
                 tour.setCity(city)
 
                 tournaments.append(tour)
-        except Error as e:
+        except BaseException as e:
             bot.log(0, "error getText: " + str(e), logging.ERROR)
 
     return tournaments
@@ -151,7 +150,7 @@ def set_children_categories(): #запрос на получение списк�
         for categories in records:
             children_categories.append(categories[0])
 
-    except Error as e:
+    except BaseException as e:
         bot.log(0, "error set children categories: " + str(e), logging.ERROR)
 
     return children_categories
@@ -165,7 +164,7 @@ def delete_old_tournaments(): #удаляет старые турниры, у к
         db.conn.commit()
         bot.log(0, "successful deletion of old tournaments", logging.INFO)
         
-    except Error as e:
+    except BaseException as e:
         bot.log(0, "error delete old tournaments: " + str(e), logging.ERROR)
 
 def all_tournaments_in_city(chatID): #выполняет запрос на вывод пользователю всех туниров в его городе
@@ -192,7 +191,7 @@ def all_tournaments_in_city(chatID): #выполняет запрос на вы�
 
         db.conn.commit()
 
-    except Error as e:
+    except BaseException as e:
         bot.log(0, "error all tournaments in city: " + str(e), logging.ERROR)
 
     return all_tournaments
@@ -221,7 +220,7 @@ def get_adult_tournaments_in_city(chatID): #выполняет запрос на
 
         db.conn.commit()
 
-    except Error as e:
+    except BaseException as e:
         bot.log(0, "error get_adult_tournaments_in_city: " + str(e), logging.ERROR)
 
     return all_tournaments
@@ -250,7 +249,7 @@ def get_adult_tournaments_on_weekend(chatID): #выполняет запрос �
 
         db.conn.commit()
 
-    except Error as e:
+    except BaseException as e:
         bot.log(0, "error get_adult_tournaments_on_weekend: " + str(e), logging.ERROR)
 
     return all_tournaments
@@ -265,7 +264,7 @@ def getCitiesByUserId(userId):
                 ids.append(str(id[0]))
             db.conn.commit()
 
-        except Error as e:
+        except BaseException as e:
             bot.log(0, "error getCitiesByUserId: " + str(e), logging.ERROR)
 
         return ids
@@ -276,7 +275,7 @@ def get_flag_is_child(chatId):
         result = db.cursor.fetchall()
         db.conn.commit()
 
-    except Error as e:
+    except BaseException as e:
         bot.log(0, "error get_flag_is_child: " + str(e), logging.ERROR)
 
     return result
@@ -307,7 +306,7 @@ def weekend_tournaments(chatID): #выполняет запрос на выво�
 
         db.conn.commit()
 
-    except Error as e:
+    except BaseException as e:
         bot.log(0, "error weekend_tournaments: " + str(e), logging.ERROR)
 
     return week_tournaments
@@ -323,7 +322,7 @@ def check_exist_user(chatID): #проверка записи пользоват�
         else:
             return False
 
-    except Error as e:
+    except BaseException as e:
         bot.log(0, "error check_exist_user: " + str(e), logging.ERROR)
 
 def query_users(users): #выполнение запроса на заполнение данных о пользователе
@@ -335,7 +334,7 @@ def query_users(users): #выполнение запроса на заполне
     try:
         db.cursor.execute(query, users)
         db.conn.commit()
-    except Error as e:
+    except BaseException as e:
         bot.log(0, "error query_users: " + str(e), logging.ERROR)
 
 def query_change_state(state, chatID): #запрос на смену состояния пользователя
@@ -344,7 +343,7 @@ def query_change_state(state, chatID): #запрос на смену состо�
     try:
         db.cursor.execute(query, state)
         db.conn.commit()
-    except Error as e:
+    except BaseException as e:
         bot.log(0, "error query_change_state: " + str(e), logging.ERROR)
 
 def subscribe_to_child_change(chatID, state): #подписка на детские турниры
@@ -353,7 +352,7 @@ def subscribe_to_child_change(chatID, state): #подписка на детск�
     try:
         db.cursor.execute(query, state)
         db.conn.commit()
-    except Error as e:
+    except BaseException as e:
         bot.log(0, "error subscribe_to_child_change: " + str(e), logging.ERROR)
 
 def add_city(chatID, city): #запрос на добавления пользователю города, в которых он хочет получать информацию о новых турнирах
@@ -363,7 +362,7 @@ def add_city(chatID, city): #запрос на добавления пользо
         cityId = getCityIdByName(city)
         db.cursor.execute("INSERT INTO UserCity (UserID, CityID) VALUES ('" + str(userId) + "', '" + str(cityId) + "');")
         db.conn.commit()
-    except Error as e:
+    except BaseException as e:
         bot.log(0, "error add_city: " + str(e), logging.ERROR)
 
 def selectState(chatID): #проверка состояния пользователя
@@ -373,7 +372,7 @@ def selectState(chatID): #проверка состояния пользоват
         db.cursor.execute("SELECT state_user FROM user_BotGo WHERE id_User = '" + str(chatID) + "'")
         records = db.cursor.fetchall()
         SelectState = records[0][0]
-    except Error as e:
+    except BaseException as e:
         bot.log(0, "error selectState: " + str(e), logging.ERROR)
 
     return SelectState
@@ -387,7 +386,7 @@ def my_city(chatID): #запрос пользователя на город\го
         my_city = []
         for item in records:
             my_city.append(item[0])
-    except Error as e:
+    except BaseException as e:
         bot.log(0, "error my_city: " + str(e), logging.ERROR)
 
     return my_city
@@ -401,7 +400,7 @@ def get_all_cities(): #запрос на получение списка гор�
         for city in records:
             all_city.append(city[0])
 
-    except Error as e:
+    except BaseException as e:
         bot.log(0, "error get_all_cities: " + str(e), logging.ERROR)
 
     return all_city
@@ -416,7 +415,7 @@ def getCityIdByName(name): #получить id города из его наз�
         if any(records):
             cityId = records[0][0]
 
-    except Error as e:
+    except BaseException as e:
         bot.log(0, "error getCityIdByName: " + str(e), logging.ERROR)
 
     return str(cityId)
@@ -430,7 +429,7 @@ def getCityNameById(id): # получить название города из �
         if any(records):
             cityName = records[0][0]
 
-    except Error as e:
+    except BaseException as e:
         bot.log(0, "error getCityNameById: " + str(e), logging.ERROR)
 
     return str(cityName)
@@ -444,7 +443,7 @@ def getUserIdByChatId(chatId): # получить id пользователя и
         if any(records):
             userId = records[0][0]
 
-    except Error as e:
+    except BaseException as e:
         bot.log(0, "error getUserIdByChatId: " + str(e), logging.ERROR)
 
     return userId
@@ -457,7 +456,7 @@ def getChatIdByUserId(Id): # получить id телеграмма польз
         if any(records):
             Id = records[0][0]
 
-    except Error as e:
+    except BaseException as e:
         bot.log(0, "error getChatIdByUserId: " + str(e), logging.ERROR)
 
     return Id
@@ -471,7 +470,7 @@ def getUsersChatByCityId(CityId): #
         for item in records:
             chats.append(item[0])
 
-    except Error as e:
+    except BaseException as e:
         bot.log(0, "error getUsersChatByCityId: " + str(e), logging.ERROR)
 
     return chats
@@ -481,7 +480,7 @@ def remove_city_for_user(chatId):
         db.cursor.execute("DELETE FROM UserCity WHERE UserID = (select id from user_BotGo WHERE id_User = '" + str(chatId) + "');")
         db.conn.commit()
         
-    except Error as e:
+    except BaseException as e:
         bot.log(0, "error remove_city_for_user: " + str(e), logging.ERROR)
 
 def is_user_child(userId):
@@ -490,7 +489,7 @@ def is_user_child(userId):
         user = db.cursor.fetchall()[0]
         return bool(user[0])
         
-    except Error as e:
+    except BaseException as e:
         bot.log(0, "error is_user_child: " + str(e), logging.ERROR)
 
 def get_new_tournaments(): #выполняет запрос на получения новых турниров
@@ -500,7 +499,7 @@ def get_new_tournaments(): #выполняет запрос на получен�
 
         db.conn.commit()
 
-    except Error as e:
+    except BaseException as e:
         bot.log(0, "error get_new_tournaments: " + str(e), logging.ERROR)
 
     return result
@@ -512,7 +511,7 @@ def get_user_subscription_city():
 
         db.conn.commit()
 
-    except Error as e:
+    except BaseException as e:
         bot.log(0, "error get_user_subscription_city: " + str(e), logging.ERROR)
 
     return result
@@ -541,7 +540,7 @@ def tournaments_for_user(Id): #выполняет запрос на вывод �
 
         db.conn.commit()
 
-    except Error as e:
+    except BaseException as e:
         bot.log(0, "error tournaments_for_user: " + str(e), logging.ERROR)
 
     return all_tournaments
@@ -572,7 +571,7 @@ def tournaments_for_user_adult(Id): #выполняет запрос на выв
 
         db.conn.commit()
 
-    except Error as e:
+    except BaseException as e:
         bot.log(0, "error tournaments_for_user_adult: " + str(e), logging.ERROR)
 
     return all_tournaments
