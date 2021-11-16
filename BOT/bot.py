@@ -25,10 +25,9 @@ def message(message):
     main1 = types.KeyboardButton('сообщение автору')
     main2 = types.KeyboardButton('сменить город')
     main3 = types.KeyboardButton('мой город')
-    main5 = types.KeyboardButton('турниры на выходных')
     main4 = types.KeyboardButton('турниры в моем городе')
 
-    mainButton.add(main1, main2, main3, main5, main4)
+    mainButton.add(main1, main2, main3, main4)
 
     towns = types.ReplyKeyboardMarkup(resize_keyboard=True)
 
@@ -138,24 +137,6 @@ def message(message):
             log(message.chat.id, "send command /start", logging.INFO)
             return
        
-        if message.text.lower() == "/weekend_tournaments" or message.text.lower() == "турниры на выходных":
-            userId = main.getUserIdByChatId(message.chat.id)
-
-            if(main.is_user_child(userId)):
-                tournaments = main.weekend_tournaments(message.chat.id)
-                log(message.chat.id, "send command /weekend_tournamens, is child", logging.INFO)
-            else: 
-                tournaments = main.get_adult_tournaments_on_weekend(message.chat.id)
-                log(message.chat.id, "send command /weekend_tournamens, is adult", logging.INFO)
-
-            if len(tournaments) == 0:
-                bot.send_message(message.chat.id, 'В твоем городе пока что нет запланированных турниров на выходные :(', reply_markup=mainButton)
-                
-            for tournament in tournaments:
-                bot.send_message(message.chat.id, 'Турнир в твоем городе на выходные 🏆... \n\n' + tournament, reply_markup=mainButton)
-                    
-            return
-            
         if message.text.lower() == "/my_city" or message.text.lower() == "мой город":
             log(message.chat.id, "send command /my_city", logging.INFO)
             for city in main.my_city(message.chat.id):
@@ -274,9 +255,9 @@ def background():
         main.main(),  # запись новых турниров
         push_message(),  # уведомление пользователей о новых турнирах
         main.delete_old_tournaments(),  # удаление устаревших по дате турниров из основной таблицы
-        log(0, "stop cycle for 10 seconds", logging.INFO)
+        log(0, "stop cycle for 300 seconds", logging.INFO)
         
-        time.sleep(10)
+        time.sleep(300)
 
 
 if __name__ == '__main__':

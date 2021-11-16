@@ -132,7 +132,7 @@ def getText(): #получает текст для вставки новых т�
                 link = "https://gofederation.ru" + str(a[0].attrs['href'])
                 tour.setLink(link)
             
-                city = i.text.replace("Сервер", "").replace(", КГС", "").replace(", KGS", "").replace(", OGS", "").replace("(КГС)", "").replace("(ОГС)", "").replace(", ОГС", "").replace("OGS", "ОГС").replace("KGS", "КГС")
+                city = i.text.replace("Сервер", "").replace(", КГС", "").replace(", KGS", "").replace(", OGS", "").replace("(КГС)", "").replace("(ОГС)", "").replace(", ОГС", "").replace("OGS", "ОГС").replace("KGS", "КГС").replace(", GoQuest", "").replace(" (GoQuest)", "")
                 tour.setCity(city)
 
                 tournaments.append(tour)
@@ -519,7 +519,7 @@ def get_user_subscription_city():
 def tournaments_for_user(Id): #выполняет запрос на вывод турниров для рассылки
     all_tournaments = []
     try:
-        db.cursor.execute("SELECT t_start, t_end, t_name, CityID, link, is_child FROM tournament_go WHERE 15 > (SELECT UNIX_TIMESTAMP(CURRENT_TIMESTAMP) - UNIX_TIMESTAMP(date_time));")
+        db.cursor.execute("SELECT t_start, t_end, t_name, CityID, link, is_child FROM tournament_go WHERE 310 > (SELECT UNIX_TIMESTAMP(CURRENT_TIMESTAMP) - UNIX_TIMESTAMP(date_time));")
         result = db.cursor.fetchall()
 
         city_user = getCitiesByUserId(Id)
