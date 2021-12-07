@@ -256,9 +256,9 @@ def background():
         main.main(),  # запись новых турниров
         push_message(),  # уведомление пользователей о новых турнирах
         main.delete_old_tournaments(),  # удаление устаревших по дате турниров из основной таблицы
-        log(0, "stop cycle for 300 seconds", logging.INFO)
+        log(0, "stop cycle for 60 seconds", logging.INFO)
         
-        time.sleep(20)
+        time.sleep(60)
 
 
 if __name__ == '__main__':

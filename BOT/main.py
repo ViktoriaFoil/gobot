@@ -8,7 +8,7 @@ import locale
 import bot
 import logging
 import mysql_dbconfig as db
-from log import log
+#from log import log
 from datetime import datetime   #Библиотеки
 
 def date(): #функция для вывода сегодняшней даты            
@@ -91,8 +91,8 @@ def main(): #связывает 2 функции insert_tournament и getText
     except BaseException as e:
         bot.log(0, "error main: " + str(e), logging.ERROR)
 
-def getText(): #получает текст для вставки новых турниров в базу данных
-    html = open('difference.html')
+def getText():  # получает текст для вставки новых турниров в базу данных
+    html = open('difference.html.html')
     root = BeautifulSoup(html, 'lxml')
     tr = root.select('tr')
     tournaments = []
@@ -101,44 +101,64 @@ def getText(): #получает текст для вставки новых т�
         td = t.select('td')
         a = t.select('a')
         tour = tournament.Tournament()
-        try:
-            for i in td:
-           
-                if "padding-right" in str(i):
-                    text_date = i.text.replace("\xa0-\xa0", "")
-                    format_string = "%d.%m.%Y"
-                    t_start = datetime.strptime(text_date, format_string).strftime("%Y-%m-%d")
-                    tour.setStart(t_start)
-                    continue
+        len_array = len(t.contents)
 
-                if "padding-left" in str(i):
-                    text_date = i.text
-                    format_string = "%d.%m.%Y"
-                    t_end = datetime.strptime(text_date, format_string).strftime("%Y-%m-%d")
-                    tour.setEnd(t_end)
-                    continue
+        if "padding-right" in str(t):
+            if len_array == 5:
+                start_date = t.contents[1].text
+                format_string = "%d.%m.%Y"
+                t_start = datetime.strptime(start_date, format_string).strftime("%Y-%m-%d")
+                tour.setStart(t_start)
 
-                if "tournament" in str(i):
-                    t_name = i.text.replace(" (", ", ").replace(")", "")
-                    is_child = 0
-                    for categories in set_children_categories():
-                        if categories in t_name:
-                            is_child = 1
-                            tour.setFlag(is_child)
-                    tour.setFlag(is_child)
-                    tour.setName(t_name)
-                    continue
+                end_date = t.contents[2].text
+                t_end = datetime.strptime(end_date, format_string).strftime("%Y-%m-%d")
+                tour.setEnd(t_end)
+
+                t_name = t.contents[3].text
+                is_child = 0
+                for categories in set_children_categories():
+                    if categories in t_name:
+                        is_child = 1
+                        tour.setFlag(is_child)
+                tour.setFlag(is_child)
+                tour.setName(t_name)
 
                 link = "https://gofederation.ru" + str(a[0].attrs['href'])
                 tour.setLink(link)
-            
-                city = i.text #.replace("Сервер", "").replace(", КГС", "").replace(", KGS", "").replace(", OGS", "").replace("(КГС)", "").replace("(ОГС)", "").replace(", ОГС", "").replace("OGS", "ОГС").replace("KGS", "КГС").replace(", GoQuest", "").replace(" (GoQuest)", "")
-                tour.setCity(city)
 
+                city = t.contents[4].text.replace("Сервер","").replace(", КГС","").replace(", KGS","").replace(", OGS","").replace("(КГС)","").replace("(ОГС)","").replace(", ОГС","").replace("OGS","ОГС").replace("KGS","КГС").replace(", GoQuest","").replace(" (GoQuest)","")
+                tour.setCity(city)
                 tournaments.append(tour)
-                return tournaments
-        except BaseException as e:
-            bot.log(0, "error getText: " + str(e), logging.ERROR)
+
+            else:
+                start_date = t.contents[0].text
+                format_string = "%d.%m.%Y"
+                t_start = datetime.strptime(start_date, format_string).strftime("%Y-%m-%d")
+                tour.setStart(t_start)
+
+                end_date = t.contents[1].text
+                t_end = datetime.strptime(end_date, format_string).strftime("%Y-%m-%d")
+                tour.setEnd(t_end)
+
+                t_name = t.contents[2].text
+                is_child = 0
+                for categories in set_children_categories():
+                    if categories in t_name:
+                        is_child = 1
+                        tour.setFlag(is_child)
+                tour.setFlag(is_child)
+                tour.setName(t_name)
+
+                link = "https://gofederation.ru" + str(a[0].attrs['href'])
+                tour.setLink(link)
+
+                city = t.contents[3].text.replace("Сервер", "").replace(", КГС", "").replace(", KGS", "").replace(", OGS", "").replace("(КГС)", "").replace("(ОГС)", "").replace(", ОГС", "").replace("OGS","ОГС").replace("KGS", "КГС").replace(", GoQuest", "").replace(" (GoQuest)", "")
+                tour.setCity(city)
+                tournaments.append(tour)
+
+            continue
+
+    return tournaments
 
 
 def set_children_categories(): #запрос на получение списка категорий
