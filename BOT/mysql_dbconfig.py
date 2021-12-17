@@ -1,11 +1,9 @@
 import os
 import mariadb
-#from mysql.connector import MySQLConnection
 import logging
 from log import log
 
 def connect_db():
-    #dbconfig = read_db_config()
     conn = mariadb.connect(
         host=os.getenv("HOST"),
         database=os.getenv("DATABASE"),
@@ -20,14 +18,4 @@ def close_connect_db():
     conn.close()
     cursor.close()
 
-#def read_db_config():
-#    db = {
-#        "host": os.getenv("HOST"),
-#        "database": os.getenv("DATABASE"),
-#        "user": os.getenv("USER"),
-#       "password": os.getenv("PASSWORD")
-#    }
-#    return db
-
-# Переменные для подключения к БД
 conn, cursor = connect_db()

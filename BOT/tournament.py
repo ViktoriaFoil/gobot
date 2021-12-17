@@ -1,3 +1,4 @@
+import datetime
 class Tournament:
     def __init__(self):
         self.start = ""
@@ -8,10 +9,12 @@ class Tournament:
         self.flag = ""
 
     def setStart(self, start):
-        self.start = start
+        format_string = "%d.%m.%Y"
+        self.start = datetime.datetime.strptime(start, format_string).strftime("%Y-%m-%d")
 
     def setEnd(self, end):
-        self.end = end
+        format_string = "%d.%m.%Y"
+        self.end = datetime.datetime.strptime(end, format_string).strftime("%Y-%m-%d")
 
     def setName(self, name):
         self.name = name

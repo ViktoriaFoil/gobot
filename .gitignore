@@ -24,4 +24,5 @@ secret.json
 50-server.cnf
 my.cnf
 tournament_go_2021-12-07_192502.sql
-ansible/tasks/main.yml
+BOT/tournament_go_2021-12-17.sql
+/tasks/main.yml
