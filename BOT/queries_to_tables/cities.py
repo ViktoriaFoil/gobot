@@ -1,4 +1,4 @@
-import BOT.queries_to_tables.database_query as query
+import queries_to_tables.database_query as query
 
 def getCitiesByUserId(userId):
     name_query = "getCitiesByUserId" 

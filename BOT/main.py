@@ -5,8 +5,8 @@ import tournament
 import datetime
 import logging
 import mysql_dbconfig as db
-import BOT.queries_to_tables.children_categories as categor
-import BOT.queries_to_tables.cities as cities
+import queries_to_tables.children_categories as categor
+import queries_to_tables.cities as cities
 import log
 
 def date(): #функция для вывода сегодняшней даты            

@@ -7,11 +7,11 @@ import main
 import logging
 import mysql_dbconfig as db
 import log
-import BOT.queries_to_tables.cities as cities
-import BOT.queries_to_tables.user_botgo as user_botgo
-import BOT.queries_to_tables.tournament_go as tournament_go
-import BOT.queries_to_tables.usercity as usercity
-import BOT.queries_to_tables.keyboards as keyboards
+import queries_to_tables.cities as cities
+import queries_to_tables.user_botgo as user_botgo
+import queries_to_tables.tournament_go as tournament_go
+import queries_to_tables.usercity as usercity
+import queries_to_tables.keyboards as keyboards
 
 token = os.getenv("BOT")
 bot = telebot.TeleBot(token)

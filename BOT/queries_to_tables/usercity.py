@@ -1,6 +1,6 @@
-import BOT.queries_to_tables.user_botgo as user_botgo
-import BOT.queries_to_tables.cities as cities
-import BOT.queries_to_tables.database_query as query
+import queries_to_tables.user_botgo as user_botgo
+import queries_to_tables.cities as cities
+import queries_to_tables.database_query as query
 
 def add_city(chatID, city): #запрос на добавления пользователю города, в которых он хочет получать информацию о новых турнирах
     userId = user_botgo.getUserIdByChatId(chatID)

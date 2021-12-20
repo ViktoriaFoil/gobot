@@ -1,6 +1,6 @@
-import BOT.log as log
+import log as log
 import logging
-import BOT.mysql_dbconfig as db
+import mysql_dbconfig as db
 from telebot import types
 
 

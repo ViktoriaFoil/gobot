@@ -1,7 +1,7 @@
-import BOT.log as log
+import log as log
 import logging
-import BOT.mysql_dbconfig as db
-import BOT.queries_to_tables.database_query as query
+import mysql_dbconfig as db
+import queries_to_tables.database_query as query
 
 
 def get_flag_is_child(chatId):

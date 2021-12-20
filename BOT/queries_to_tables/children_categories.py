@@ -1,4 +1,4 @@
-import BOT.queries_to_tables.database_query as query
+import queries_to_tables.database_query as query
 
 def set_children_categories(): #запрос на получение списка категорий
     name_query = "set_children_categories"

@@ -1,4 +1,4 @@
-import BOT.queries_to_tables.database_query as query
+import queries_to_tables.database_query as query
 
 def delete_old_tournaments(): #удаляет старые турниры, у которых дата старта меньше текущей даты
     name_query = "delete_old_tournaments"

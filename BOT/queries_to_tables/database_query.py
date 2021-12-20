@@ -1,9 +1,9 @@
-import BOT.log as log
+import log as log
 import logging
 import locale
-import BOT.queries_to_tables.cities as cities
-import BOT.queries_to_tables.user_botgo as user_botgo
-import BOT.mysql_dbconfig as db
+import queries_to_tables.cities as cities
+import queries_to_tables.user_botgo as user_botgo
+import mysql_dbconfig as db
 import datetime
 
 

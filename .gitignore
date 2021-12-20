@@ -23,6 +23,6 @@ secret.json
 2021-11-12-14-24-56.007-VBoxHeadless-146842.log
 50-server.cnf
 my.cnf
-tournament_go_2021-12-07_192502.sql
-BOT/tournament_go_2021-12-17.sql
 /tasks/main.yml
+config/tournament_go_2021-12-17.sql
+BOT/queries_to_tables/__pycache__
