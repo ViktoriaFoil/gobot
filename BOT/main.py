@@ -1,15 +1,13 @@
 import requests
 import os
 from bs4 import BeautifulSoup
-import tournament
 import datetime
 import logging
-import mysql_dbconfig as db
-import queries_to_tables.children_categories as categor
-import queries_to_tables.cities as cities
-import log
+import tournament, log, mysql_dbconfig
+import BOT.bot
 
-def date(): #функция для вывода сегодняшней даты            
+
+def date(): #функция для вывода сегодняшней даты
     today = datetime.now().date()
     return today
 
@@ -45,10 +43,10 @@ def compare(current_page, old_page): #функция для сравнения �
         log.log(0, "record set: " + old_page, logging.INFO)
         current_records = record_set(current_page)
         log.log(0, "record set " + current_page, logging.INFO)
-        open('difference.html', 'w').close()
+        open('BOT/difference.html', 'w').close()
         new_records = []
 
-        with open('difference.html', 'a') as f: # проверка отличий
+        with open('BOT/difference.html', 'a') as f: # проверка отличий
             for line in current_records:
                 if line not in old_records:
                     new_records.append(line)
@@ -80,9 +78,9 @@ def insert_tournament(tournaments): #добавляет турниры в баз
         query = "INSERT INTO tournament_go (t_start, t_end, t_name, CityID, link, is_child) VALUES(%s, %s, %s, %s, %s, %s)"
 
         try:
-            cityId = int(cities.getCityIdByName(tour.city))
-            db.cursor.execute(query, [tour.start, tour.end, tour.name, cityId, tour.link, tour.flag])
-            db.conn.commit()
+            cityId = int(BOT.bot.Cities().getCityIdByName(tour.city))
+            mysql_dbconfig.cursor.execute(query, [tour.start, tour.end, tour.name, cityId, tour.link, tour.flag])
+            mysql_dbconfig.conn.commit()
         except BaseException as e:
             log.log(0, "error insert tournament: " + str(e), logging.ERROR)
 
@@ -97,7 +95,7 @@ def main(): #связывает 2 функции insert_tournament и getText
 
 
 def getText():  # получает текст для вставки новых турниров в базу данных
-    html = open('difference.html')
+    html = open('BOT/difference.html')
     root = BeautifulSoup(html, 'lxml')
     tr = root.select('tr')
     tournaments = []
@@ -118,7 +116,7 @@ def getText():  # получает текст для вставки новых �
 
                 t_name = t.contents[3].text
                 is_child = 0
-                for categories in categor.set_children_categories():
+                for categories in BOT.bot.Children_categories().set_children_categories():
                     if categories[0] in t_name:
                         is_child = 1
                         tour.setFlag(is_child)
@@ -141,7 +139,7 @@ def getText():  # получает текст для вставки новых �
 
                 t_name = t.contents[2].text
                 is_child = 0
-                for categories in categor.set_children_categories():
+                for categories in BOT.bot.Children_categories().set_children_categories():
                     if categories[0] in t_name:
                         is_child = 1
                         tour.setFlag(is_child)
