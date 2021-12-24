@@ -13,11 +13,11 @@ class Tournament_go:
         return BOT.bot.Database_query().query_with_ID(name_query, array, query_to_db, ID)
 
 
-    def get_adult_tournaments_in_city(self, chatID): #выполняет запрос на вывод пользователю всех взрослых туниров в его городе
+    def get_adult_tournaments_in_city(self, ID): #выполняет запрос на вывод пользователю всех взрослых туниров в его городе
         name_query = "get_adult_tournaments_in_city"
         array = []
         query_to_db = "SELECT t_start, t_end, t_name, CityID, link, is_child FROM tournament_go WHERE is_child = 0;"
-        return BOT.bot.Database_query().query_with_chatID(name_query, array, query_to_db, chatID)
+        return BOT.bot.Database_query().query_with_ID(name_query, array, query_to_db, ID)
 
 
     def get_adult_tournaments_on_weekend(self, chatID): #выполняет запрос на вывод пользователю всех взрослых туниров в его городе на выходных

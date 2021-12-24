@@ -59,8 +59,8 @@ class Database_query:
                 if str(res[3]) in city_user:
                     locale.setlocale(locale.LC_TIME, 'ru_RU.UTF-8')
                     format_string = "%Y-%m-%d"
-                    start = datetime.datetime.strptime(str(res[0]), format_string).strftime("%d %B %Y")
-                    end = datetime.datetime.strptime(str(res[1]), format_string).strftime("%d %B %Y")
+                    start = datetime.datetime.strptime(f"{res[0].year}-{res[0].month}-{res[0].day}", format_string).strftime("%d %B %Y")
+                    end = datetime.datetime.strptime(f"{res[1].year}-{res[1].month}-{res[1].day}", format_string).strftime("%d %B %Y")
                     tournament = f"Начало: {start}\n"
                     tournament += f"Конец: {end}\n\n"
                     tournament += f"Название: {res[2]}\n\n"
