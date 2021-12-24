@@ -27,3 +27,4 @@ my.cnf
 config/tournament_go_2021-12-17.sql
 BOT/queries_to_tables/__pycache__
 BOT/stages/__pycache__
+hide
