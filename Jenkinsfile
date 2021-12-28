@@ -21,11 +21,23 @@ pipeline {
                 sh 'docker push foilv/tournaments_go:latest'
             }
         }
-        stage ('deploy') {
+        stage ('change files') {
             steps {
                 dir("first-try/"){
                     sh "echo $SECRETPASS | ansible-playbook --extra-vars=secretbot.yml --ask-vault-pass replacing-variables.yml"
+                }
+            }
+        }
+        stage ('run playbook') {
+            steps {
+                dir("first-try/"){
                     sh "ansible-playbook -i inventory.yml --extra-vars=vars.yml install_k3s.yml -u foilv"
+                }
+            }
+        }
+        stage ('remove files') {
+            steps {
+                dir("first-try/"){
                     sh "rm inventory.yml vars.yml password ../chartbot/script-import ../chartbot/values.yml ../chartbot/valuesdb.yml"
                 }
             }
