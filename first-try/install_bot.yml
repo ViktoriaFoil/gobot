@@ -73,4 +73,4 @@
         - /home/foilv/chartbot/values.yml
 
   roles:
-    - geerlingguy.docker
+    - role: geerlingguy.docker
