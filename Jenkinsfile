@@ -2,12 +2,13 @@ pipeline {
     agent any
     environment {
         DOCKERHUB_CREDENTIALS = credentials('login-dockerhub')
+        PASSWORD = credentials('pass')
     }
     
     stages {
         stage ('build') {
             steps {
-                sh 'docker build -t foilv/tournament_go:jenkins1 .' 
+                sh 'docker build -t foilv/tournaments_go:latest .' 
             }
         }
         stage ('login') {
@@ -18,6 +19,11 @@ pipeline {
         stage ('push') {
             steps {
                 sh 'docker push foilv/tournament_go:jenkins1'
+            }
+        }
+        stage ('ls') {
+            steps {
+                sh "ls"
             }
         }
     }
