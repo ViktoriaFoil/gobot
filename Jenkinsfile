@@ -29,7 +29,7 @@ pipeline {
         stage ('echo pass') {
             steps {
                 dir('first-try/'){
-                    sh "echo $PASSWORD > password"
+                    sh "echo $SECRETPASS > password"
                 }
             }
         }
