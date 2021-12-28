@@ -38,6 +38,11 @@ pipeline {
                 sh "ansible-galaxy install geerlingguy.docker"
             }
         }
+        stage ('install collection') {
+            steps {
+                sh "ansible-galaxy collection install kubernetes.core"
+            }
+        }
         stage ('change files') {
             steps {
                 dir('first-try'){
