@@ -1,7 +1,7 @@
 all:
   hosts:
     bot:
-      ansible_host: {{ HOSTIP }}
+      ansible_host: 192.168.0.108
       ansible_port: 22
       ansible_user: foilv
       ansible_become_password: "{{ PASS }}"
