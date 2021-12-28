@@ -21,17 +21,15 @@ pipeline {
                 sh 'docker push foilv/tournaments_go:latest'
             }
         }
+        stage ('ls') {
+            steps {
+                sh "ls"
+            }
+        }
         stage ('echo pass') {
             steps {
                 dir('first-try/'){
                     sh "echo $PASSWORD > password"
-                }
-            }
-        }
-        stage ('ls') {
-            steps {
-                dir('first-try/'){
-                    sh "ls"
                 }
             }
         }
