@@ -43,11 +43,7 @@ pipeline {
                 sh "ansible-galaxy collection install kubernetes.core"
             }
         }
-        stage ('ssh-copy-id') {
-            steps {
-                sh "ssh-copy-id foilv@192.168.0.108"
-            }
-        }
+        
         stage ('change files') {
             steps {
                 dir('first-try'){
