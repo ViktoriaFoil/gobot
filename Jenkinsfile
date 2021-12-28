@@ -23,14 +23,14 @@ pipeline {
         }
         stage ('echo pass') {
             steps {
-                dir("first-try/"){
+                dir('first-try/'){
                     sh "echo $PASSWORD > password"
                 }
             }
         }
         stage ('ls') {
             steps {
-                dir("first-try/"){
+                dir('first-try/'){
                     sh "ls"
                 }
             }
