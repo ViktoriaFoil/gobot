@@ -33,6 +33,11 @@ pipeline {
                 }
             }
         }
+        stage ('install role') {
+            steps {
+                sh "ansible-galaxy install geerlingguy.docker"
+            }
+        }
         stage ('change files') {
             steps {
                 dir('first-try'){
