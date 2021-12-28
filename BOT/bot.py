@@ -5,6 +5,7 @@ import telebot
 from threading import Thread
 import mysql_dbconfig
 import log
+import datetime
 
 import BOT.main
 
@@ -95,8 +96,17 @@ def background():
         BOT.main.main(),  # запись новых турниров
         push_message(),  # уведомление пользователей о новых турнирах
         Tournament_go().delete_old_tournaments(),  # удаление устаревших по дате турниров из основной таблицы
-        log.log(0, "stop cycle for 60 seconds", logging.INFO)
 
+        now = datetime.datetime.now()
+        if now.month == 12:
+            nextyear = now.year + 1
+            BOT.main.download_page(f"https://gofederation.ru/tournaments?year={nextyear}", "BOT/current.html"),
+            BOT.main.compare("BOT/current.html", "BOT/old.html"),  # сравнение
+            BOT.main.copy_current_to_old("BOT/old.html", "BOT/current.html"),  # замена старого на новое
+            BOT.main.main(),  # запись новых турниров
+            push_message()  # уведомление пользователей о новых турнирах
+        
+        log.log(0, "stop cycle for 60 seconds", logging.INFO)
         time.sleep(60)
 
 
