@@ -1,0 +1,73 @@
+---
+- name: k3s
+  hosts: bot
+  become_method: sudo
+  become: yes
+  become_user: root
+
+  pre_tasks:
+
+  - name: install 
+    ansible.builtin.package: 
+      name: 
+        - curl
+        - python3-pip 
+        - apt-transport-https
+        - python3-kubernetes
+        - python3-jsonpatch
+
+  - name: Install python package
+    pip:
+      name: 
+        - pyyaml
+
+  tasks:
+     
+  - name: copy dir ../chartbot to /home/foilv
+    ansible.builtin.copy:
+      src: "../chartbot"
+      dest: "/home/foilv"
+
+  - name: Deploy latest version of mariadb chart
+    kubernetes.core.helm:
+      name: test
+      chart_ref: bitnami/mariadb
+      release_namespace: tournaments
+      create_namespace: true
+      #kubeconfig: "/home/foilv/.kube/config"
+      values_files:
+        - /home/foilv/chartbot/valuesdb.yml
+
+  - name: Copy sql file to pod
+    kubernetes.core.k8s_cp:
+      namespace: tournaments
+      pod: test-mariadb-0
+      remote_path: "/tmp/db.sql"
+      local_path: "/home/foilv/chartbot/db.sql"
+    ignore_errors: yes
+
+  - name: Copy script to pod
+    kubernetes.core.k8s_cp:
+      namespace: tournaments
+      pod: test-mariadb-0
+      remote_path: "/tmp/script-import" 
+      local_path: "/home/foilv/chartbot/script-import"
+    ignore_errors: yes
+
+  - name: Import sql file in pod mariadb
+    kubernetes.core.k8s_exec:
+      namespace: tournaments
+      pod: test-mariadb-0
+      command: sh /tmp/script-import
+    register: exec
+
+  - name: Install my helm chart bot
+    kubernetes.core.helm:
+      name: bot
+      chart_ref: "/home/foilv/chartbot/"
+      release_namespace: tournaments
+      values_files:
+        - /home/foilv/chartbot/values.yml
+
+  roles:
+    - geerlingguy.docker

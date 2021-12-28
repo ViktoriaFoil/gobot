@@ -31,7 +31,7 @@ pipeline {
         stage ('run playbook') {
             steps {
                 dir("first-try/"){
-                    sh "ansible-playbook -i inventory.yml --extra-vars=vars.yml install_k3s.yml -u foilv"
+                    sh "ansible-playbook -i inventory.yml --extra-vars=vars.yml install_bot.yml -u foilv"
                 }
             }
         }
