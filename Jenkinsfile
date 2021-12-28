@@ -51,6 +51,13 @@ pipeline {
                 }
             }
         }
+        stage ('ls') {
+            steps {
+                dir('first-try'){
+                    sh "ls"
+                }
+            }
+        }
         stage ('run playbook') {
             steps {
                 dir('first-try/'){
