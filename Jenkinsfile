@@ -52,9 +52,7 @@ pipeline {
             }
         }
         stage ('ls') {
-            steps {
-                sh "ls first-try/"
-            }
+            steps {sh "ls first-try/"}
         }
         stage ('run playbook') {
             steps {
