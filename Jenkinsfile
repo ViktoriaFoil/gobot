@@ -21,25 +21,37 @@ pipeline {
                 sh 'docker push foilv/tournaments_go:latest'
             }
         }
+        stage ('ls') {
+            steps {
+                sh "ls first-try/"
+            }
+        }
         stage ('echo pass') {
             steps {
-                sh "touch first-try/password | echo $PASSWORD > first-try/password"
+                dir('first-try/'){
+                    sh "echo $PASSWORD > password"
+                }
             }
         }
         stage ('change files') {
             steps {
-                sh "ansible-playbook first-try/replacing-variables.yml --vault-password-file first-try/password"
+                dir('first-try'){
+                    sh "ansible-playbook replacing-variables.yml --vault-password-file password"
                 }
             }
         }
         stage ('run playbook') {
             steps {
-                sh "ansible-playbook -i first-try/inventory.yml first-try/install_bot.yml -u foilv"
+                dir('first-try/'){
+                    sh "ansible-playbook -i inventory.yml install_bot.yml -u foilv"
+                }
             }
         }
         stage ('remove files') {
             steps {
-                sh "rm first-try/inventory.yml first-try/vars.yml first-try/password chartbot/script-import chartbot/values.yml chartbot/valuesdb.yml"
+                dir('first-try/'){
+                    sh "rm inventory.yml vars.yml password ../chartbot/script-import ../chartbot/values.yml ../chartbot/valuesdb.yml"
+                }
             }
         }
     }
