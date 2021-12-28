@@ -48,7 +48,7 @@ pipeline {
             steps {
                 dir('first-try'){
                     sh "ansible-playbook replacing-variables.yml --vault-password-file password"
-                    sh "ls first-try/"
+                    sh "ls"
                 }
             }
         }
