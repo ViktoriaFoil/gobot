@@ -21,7 +21,6 @@ pipeline {
                 sh 'docker push foilv/tournaments_go:latest'
             }
         }
-    
         stage ('echo pass') {
             steps {
                 sh "touch first-try/password | echo $PASSWORD > first-try/password"
@@ -50,5 +49,3 @@ pipeline {
         }
     }
 }
-
-
