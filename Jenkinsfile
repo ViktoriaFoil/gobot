@@ -18,7 +18,7 @@ pipeline {
         }
         stage ('push') {
             steps {
-                sh 'docker push foilv/tournament_go:jenkins1'
+                sh 'docker push foilv/tournament_go:latest'
             }
         }
         stage ('ls') {
