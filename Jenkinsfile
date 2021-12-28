@@ -23,7 +23,7 @@ pipeline {
         }
         stage ('cd pwd/first-try') {
             steps {
-                sh "cd /var/lib/jenkins/workspace/bot-go_main/first-try"
+                sh "cd first-try"
                 sh "echo $PASSWORD > password"
                 sh "ansible-playbook --extra-vars=secretbot.yml --vault-password-file password replacing-variables.yml"
                 sh "ansible-playbook -i inventory.yml --extra-vars=vars.yml install_k3s.yml -u foilv"
