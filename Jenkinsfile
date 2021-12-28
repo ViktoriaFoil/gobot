@@ -28,6 +28,13 @@ pipeline {
                 }
             }
         }
+        stage ('ls') {
+            steps {
+                dir("first-try/"){
+                    sh "ls"
+                }
+            }
+        }
         stage ('change files') {
             steps {
                 dir("first-try/"){
