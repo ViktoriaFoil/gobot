@@ -54,7 +54,7 @@ pipeline {
         stage ('run playbook') {
             steps {
                 dir('first-try/'){
-                    sh "ansible-playbook install_bot.yml -i inventory.yml"
+                    sh "ansible-playbook install_bot.yml -i inventory.yml -u foilv"
                 }
             }
         }
