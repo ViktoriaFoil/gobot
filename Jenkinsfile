@@ -23,7 +23,7 @@ pipeline {
         }
         stage ('ls') {
             steps {
-                sh "ls"
+                sh "ls first-try/"
             }
         }
         stage ('echo pass') {
