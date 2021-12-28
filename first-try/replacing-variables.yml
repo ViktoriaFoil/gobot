@@ -1,0 +1,19 @@
+---
+- hosts: 127.0.0.1
+
+  vars:
+    files:
+      - inventory.yml
+      - ../chartbot/valuesdb.yml
+      - ../chartbot/values.yml
+      - ../chartbot/script-import
+      - vars.yml
+
+  tasks:
+    - name: change
+      template:
+        src: "{{ item }}.j2"
+        dest: "{{ item }}"
+      loop: "{{ files }}"
+
+   

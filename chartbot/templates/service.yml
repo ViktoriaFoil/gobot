@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{.Release.Name}}-service
+spec:
+  type: ClusterIP
+  ports:
+    - name: {{.Release.Name}}-bot
+      port: 80
+      targetPort: http
+      protocol: TCP
+  selector:
+    project: {{.Release.Name}}

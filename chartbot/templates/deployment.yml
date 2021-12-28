@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: {{.Release.Name}}-app
+  name: {{.Release.Name}}-name
+spec:
+  minReadySeconds: 30
+  selector:
+    matchLabels:
+      app: {{.Release.Name}}-app
+
+  template:
+    metadata:
+      labels:
+        app: {{.Release.Name}}-app
+    spec:
+      volumes:
+      - name: ts-storage
+        emptyDir: {}
+
+      containers:
+      - name: {{.Values.name}}
+        image: {{.Values.image}}
+        imagePullPolicy: IfNotPresent
+        env: 
+          - name: USER
+            value: {{.Values.secret.user}}
+
+          - name: PASSWORD
+            value: "{{.Values.secret.pass}}"
+                
+          - name: BOT
+            value: {{.Values.secret.bot}}
+                
+          - name: DATABASE
+            value: {{.Values.secret.db}}
+
+          - name: HOST
+            value: {{.Values.secret.host}}
+

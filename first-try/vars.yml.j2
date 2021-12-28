@@ -1,0 +1,16 @@
+mysql_packages:
+  - mariadb-server
+  - mariadb-client
+  - python3-mysqldb
+
+mysql_enabled_on_startup: true
+
+mysql_databases:
+  - name: tournament_go
+    
+mysql_users:
+  - name: foilv
+    host: "%"
+    password: {{ PASS }}
+    priv: '*.*:ALL,GRANT'
+
