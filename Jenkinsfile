@@ -55,6 +55,7 @@ pipeline {
         stage ('run playbook') {
             steps {
                 dir('first-try/'){
+                    sh "su jenkins"
                     sh "ansible-playbook install_bot.yml -i inventory.yml -u foilv"
                 }
             }
