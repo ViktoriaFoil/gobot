@@ -62,6 +62,7 @@ pipeline {
         stage ('remove files') {
             steps {
                 dir('first-try/'){
+                    sh "whoami"
                     sh "rm inventory.yml vars.yml password ../chartbot/script-import ../chartbot/values.yml ../chartbot/valuesdb.yml"
                 }
             }
