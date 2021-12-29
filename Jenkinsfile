@@ -3,6 +3,7 @@ pipeline {
     environment {
         DOCKERHUB_CREDENTIALS = credentials('login-dockerhub')
         SECRETPASS = credentials('pass')
+        KUBECONFIG = credentials('kubectl_config')
     }
     
     stages {
@@ -26,6 +27,12 @@ pipeline {
                 sh "ls first-try/"
             }
         }
+        stage ('echo kubeconfig') {
+            steps {
+                sh "echo $KUBECONFIG | base64 -d > kubeconfig | chmod 0600 kubeconfig"
+            }
+        }
+
         stage ('echo pass') {
             steps {
                 dir('first-try/'){
@@ -55,8 +62,7 @@ pipeline {
         stage ('run playbook') {
             steps {
                 dir('first-try/'){
-                    sh "whoami"
-                    sh "ansible-playbook install_bot.yml -i inventory.yml -u foilv"
+                    sh "ansible-playbook install_bot.yml"
                 }
             }
         }

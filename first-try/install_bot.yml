@@ -1,6 +1,6 @@
 ---
 - name: k3s
-  hosts: bot
+  hosts: localhost
   become_method: sudo
   become: yes
   become_user: root
@@ -10,28 +10,7 @@
   roles:
     - role: geerlingguy.docker
 
-  pre_tasks:
-
-  - name: install 
-    ansible.builtin.package: 
-      name: 
-        - curl
-        - python3-pip 
-        - apt-transport-https
-        - python3-kubernetes
-        - python3-jsonpatch
-
-  - name: Install python package
-    pip:
-      name: 
-        - pyyaml
-
   tasks:
-     
-  - name: copy dir ../chartbot to /home/foilv
-    ansible.builtin.copy:
-      src: "../chartbot"
-      dest: "/home/foilv"
 
   - name: Deploy latest version of mariadb chart
     kubernetes.core.helm:
@@ -39,13 +18,13 @@
       chart_ref: bitnami/mariadb
       release_namespace: tournaments
       create_namespace: true
-      kubeconfig: "/var/lib/jenkins/config"
+      kubeconfig: "kubeconfig"
       values_files:
         - /home/foilv/chartbot/valuesdb.yml
 
   - name: Copy sql file to pod
     kubernetes.core.k8s_cp:
-      kubeconfig: "/var/lib/jenkins/config"
+      kubeconfig: "kubeconfig"
       namespace: tournaments
       pod: test-mariadb-0
       remote_path: "/tmp/db.sql"
@@ -54,7 +33,7 @@
 
   - name: Copy script to pod
     kubernetes.core.k8s_cp:
-      kubeconfig: "/var/lib/jenkins/config"
+      kubeconfig: "kubeconfig"
       namespace: tournaments
       pod: test-mariadb-0
       remote_path: "/tmp/script-import" 
@@ -63,7 +42,7 @@
 
   - name: Import sql file in pod mariadb
     kubernetes.core.k8s_exec:
-      kubeconfig: "/var/lib/jenkins/config"
+      kubeconfig: "kubeconfig"
       namespace: tournaments
       pod: test-mariadb-0
       command: sh /tmp/script-import
@@ -71,7 +50,7 @@
 
   - name: Install my helm chart bot
     kubernetes.core.helm:
-      kubeconfig: "/var/lib/jenkins/config"
+      kubeconfig: "kubeconfig"
       name: bot
       chart_ref: "/home/foilv/chartbot/"
       release_namespace: tournaments
