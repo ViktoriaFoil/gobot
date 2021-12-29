@@ -9,16 +9,16 @@
 
   tasks:
 
-  - name: Deploy latest version of mariadb chart
-    kubernetes.core.helm:
-      name: test
-      validate_certs: no
-      chart_ref: bitnami/mariadb
-      release_namespace: tournaments
-      create_namespace: true
-      kubeconfig_path: "./kubeconfig"
-      values_files:
-        - ../chartbot/valuesdb.yml
+  # - name: Deploy latest version of mariadb chart
+  #   kubernetes.core.helm:
+  #     name: test
+  #     validate_certs: no
+  #     chart_ref: bitnami/mariadb
+  #     release_namespace: tournaments
+  #     create_namespace: true
+  #     kubeconfig_path: "./kubeconfig"
+  #     values_files:
+  #       - ../chartbot/valuesdb.yml
 
   - name: Copy sql file to pod
     kubernetes.core.k8s_cp:
