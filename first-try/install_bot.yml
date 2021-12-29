@@ -1,9 +1,6 @@
 ---
 - name: k3s
   hosts: localhost
-  become_method: sudo
-  become: yes
-  become_user: root
 
   vars_files:
     - ./vars.yml
