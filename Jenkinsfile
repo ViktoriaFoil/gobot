@@ -55,7 +55,6 @@ pipeline {
         stage ('run playbook') {
             steps {
                 dir('first-try/'){
-                    sh "kubectl config set-context config --namespace=tournaments --write-kubeconfig-mode 644"
                     sh "ansible-playbook install_bot.yml -i inventory.yml -u foilv"
                 }
             }
