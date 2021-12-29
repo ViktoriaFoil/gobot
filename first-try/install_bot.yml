@@ -16,14 +16,14 @@
       chart_ref: bitnami/mariadb
       release_namespace: tournaments
       create_namespace: true
-      kubeconfig: "./kubeconfig"
+      kubeconfig_path: "./kubeconfig"
       values_files:
         - ../chartbot/valuesdb.yml
 
   - name: Copy sql file to pod
     kubernetes.core.k8s_cp:
       validate_certs: no
-      kubeconfig: "./kubeconfig"
+      kubeconfig_path: "./kubeconfig"
       namespace: tournaments
       pod: test-mariadb-0
       remote_path: "/tmp/db.sql"
@@ -33,7 +33,7 @@
   - name: Copy script to pod
     kubernetes.core.k8s_cp:
       validate_certs: no
-      kubeconfig: "./kubeconfig"
+      kubeconfig_path: "./kubeconfig"
       namespace: tournaments
       pod: test-mariadb-0
       remote_path: "/tmp/script-import" 
@@ -43,7 +43,7 @@
   - name: Import sql file in pod mariadb
     kubernetes.core.k8s_exec:
       validate_certs: no
-      kubeconfig: "./kubeconfig"
+      kubeconfig_path: "./kubeconfig"
       namespace: tournaments
       pod: test-mariadb-0
       command: sh /tmp/script-import
@@ -52,7 +52,7 @@
   - name: Install my helm chart bot
     kubernetes.core.helm:
       validate_certs: no
-      kubeconfig: "./kubeconfig"
+      kubeconfig_path: "./kubeconfig"
       name: bot
       chart_ref: "/home/foilv/chartbot/"
       release_namespace: tournaments
