@@ -23,7 +23,7 @@
   - name: Copy sql file to pod
     kubernetes.core.k8s_cp:
       validate_certs: no
-      kubeconfig_path: "./kubeconfig"
+      kubeconfig: "./kubeconfig"
       namespace: tournaments
       pod: test-mariadb-0
       remote_path: "/tmp/db.sql"
@@ -33,7 +33,7 @@
   - name: Copy script to pod
     kubernetes.core.k8s_cp:
       validate_certs: no
-      kubeconfig_path: "./kubeconfig"
+      kubeconfig: "./kubeconfig"
       namespace: tournaments
       pod: test-mariadb-0
       remote_path: "/tmp/script-import" 
@@ -43,7 +43,7 @@
   - name: Import sql file in pod mariadb
     kubernetes.core.k8s_exec:
       validate_certs: no
-      kubeconfig_path: "./kubeconfig"
+      kubeconfig: "./kubeconfig"
       namespace: tournaments
       pod: test-mariadb-0
       command: sh /tmp/script-import
