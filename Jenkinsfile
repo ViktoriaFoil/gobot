@@ -22,11 +22,7 @@ pipeline {
                 sh 'docker push foilv/tournaments_go:latest'
             }
         }
-        stage ('ls') {
-            steps {
-                sh "ls first-try/"
-            }
-        }
+       
         stage ('echo kubeconfig') {
             steps {
                 dir('first-try/'){
@@ -40,6 +36,12 @@ pipeline {
                 dir('first-try/'){
                     sh "echo $SECRETPASS > password"
                 }
+            }
+        }
+
+        stage ('ls') {
+            steps {
+                sh "ls first-try/"
             }
         }
         stage ('install role') {
