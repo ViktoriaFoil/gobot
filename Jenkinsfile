@@ -29,8 +29,9 @@ pipeline {
         }
         stage ('echo kubeconfig') {
             steps {
-                sh "echo $KUBECONFIG | base64 -d > kubeconfig | chmod 0600 kubeconfig"
-                sh "cat kubeconfig"
+                dir('first-try/'){
+                    sh "echo $KUBECONFIG | base64 -d > kubeconfig | chmod 0600 kubeconfig"
+                }
             }
         }
 
