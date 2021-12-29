@@ -48,7 +48,7 @@ pipeline {
             steps {
                 dir('first-try'){
                     sh "ansible-playbook replacing-variables.yml --vault-password-file password"
-                    sh "cat /var/lib/jenkins/workspace/FPipeline/ansible.cfg"
+                    sh "cat /var/lib/jenkins/workspace/bot-go_main/ansible.cfg"
                 }
             }
         }
