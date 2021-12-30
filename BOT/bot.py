@@ -1,13 +1,12 @@
-import logging
 import os
 import time
-import telebot
-from threading import Thread
-import mysql_dbconfig
-import log
 import datetime
-
-import BOT.main
+import telebot
+import logging
+import log
+import mysql_dbconfig
+import BOT.main as main
+from threading import Thread
 
 from BOT.stages.massage_to_developer import Message_to_developer
 from BOT.stages.state_main import State_main
@@ -66,7 +65,7 @@ def message(message):
 #=======================================================================================================
 #=======================================================================================================
 
-def push_message(): #ПРОВЕРИТЬ
+def push_message(): 
     try:
         for new_tournaments in Tournament_go().get_new_tournaments(): # новые турниры
             for UserCity in Usercity().get_user_subscription_city(): # подписки на города пользователей
@@ -90,20 +89,20 @@ def push_message(): #ПРОВЕРИТЬ
 
 def background():
     while True:
-        BOT.main.download_page("https://gofederation.ru/tournaments/", "BOT/current.html"),  # скачивание актуальной версии турниров
-        BOT.main.compare("BOT/current.html", "BOT/old.html"),  # сравнение
-        BOT.main.copy_current_to_old("BOT/old.html", "BOT/current.html"),  # замена старого на новое
-        BOT.main.main(),  # запись новых турниров
+        main.download_page("https://gofederation.ru/tournaments/", "BOT/current.html"),  # скачивание актуальной версии турниров
+        main.compare("BOT/current.html", "BOT/old.html"),  # сравнение
+        main.copy_current_to_old("BOT/old.html", "BOT/current.html"),  # замена старого на новое
+        main.main(),  # запись новых турниров
         push_message(),  # уведомление пользователей о новых турнирах
         Tournament_go().delete_old_tournaments(),  # удаление устаревших по дате турниров из основной таблицы
 
         now = datetime.datetime.now()
         if now.month == 12:
             nextyear = now.year + 1
-            BOT.main.download_page(f"https://gofederation.ru/tournaments?year={nextyear}", "BOT/current.html"),
-            BOT.main.compare("BOT/current.html", "BOT/old.html"),  # сравнение
-            BOT.main.copy_current_to_old("BOT/old.html", "BOT/current.html"),  # замена старого на новое
-            BOT.main.main(),  # запись новых турниров
+            main.download_page(f"https://gofederation.ru/tournaments?year={nextyear}", "BOT/current.html"),
+            main.compare("BOT/current.html", "BOT/old.html"),  # сравнение
+            main.copy_current_to_old("BOT/old.html", "BOT/current.html"),  # замена старого на новое
+            main.main(),  # запись новых турниров
             push_message()  # уведомление пользователей о новых турнирах
         
         log.log(0, "stop cycle for 60 seconds", logging.INFO)

@@ -3,7 +3,7 @@ import telebot
 import logging
 
 from BOT import log
-import BOT.bot
+import BOT.bot as app
 
 token = os.getenv("BOT")
 bot = telebot.TeleBot(token)
@@ -14,10 +14,10 @@ class Message_to_developer:
 
     def mess_to_dev(self, message):
 
-        mainButton = BOT.bot.Keyboards().get_keyboard("main")
+        mainButton = app.Keyboards().get_keyboard("main")
 
         bot.send_message(925936432, f"Сообщение от: \n{message.chat.id}\n{message.html_text}")
         bot.send_message(message.chat.id, "Отправил")
-        BOT.bot.User_botgo().query_change_state("main", message.chat.id)
+        app.User_botgo().query_change_state("main", message.chat.id)
         log.log(message.chat.id, "sent a letter to the developer, change of state", logging.INFO)
         bot.send_message(message.chat.id, 'Если хочешь еще раз написать разработчику, напиши команду /message_to_developer', reply_markup=mainButton)

@@ -3,7 +3,7 @@ import telebot
 from telebot import types
 import logging
 from BOT import log
-import BOT.bot
+import BOT.bot as app
 
 token = os.getenv("BOT")
 bot = telebot.TeleBot(token)
@@ -15,10 +15,10 @@ class City_selection_chenge:
     def message_state_city_selection(self, message):
 
         towns = types.ReplyKeyboardMarkup(resize_keyboard=True)
-        age = BOT.bot.Keyboards().get_keyboard("age")
-        navigation = BOT.bot.Keyboards().get_keyboard("navigation")
+        age = app.Keyboards().get_keyboard("age")
+        navigation = app.Keyboards().get_keyboard("navigation")
 
-        all_city = sorted(set(BOT.bot.Cities().get_all_cities()) - set(listCity))
+        all_city = sorted(set(app.Cities().get_all_cities()) - set(listCity))
         for city in all_city:
             towns.add(types.KeyboardButton(city))
 
@@ -28,7 +28,7 @@ class City_selection_chenge:
 
 
         if message.html_text in all_city:
-            BOT.bot.Usercity().add_city(message.chat.id, message.html_text)
+            app.Usercity().add_city(message.chat.id, message.html_text)
             listCity.append(message.html_text)
             bot.send_message(message.chat.id, 'Если хочешь выбрать еще города, нажми ДАЛЕЕ, если нет, то нажми СТОП', reply_markup=navigation)
             log.log(message.chat.id, "user selects a city", logging.INFO)
@@ -40,7 +40,7 @@ class City_selection_chenge:
 
 
         if message.html_text == 'стоп':
-            BOT.bot.User_botgo().query_change_state("age_category", message.chat.id)
+            app.User_botgo().query_change_state("age_category", message.chat.id)
             bot.send_message(message.chat.id, 'Выбери свою категорию. Это нужно, чтобы я фильтровал для тебя турниры. В категории я ребенок, присылаюся все турниры. В категории я взрослый, только взрослые турниры.', reply_markup=age)
             log.log(message.chat.id, "the user has selected all the cities that interest him, switched to the age selection state", logging.INFO)
             listCity.clear()
@@ -51,10 +51,10 @@ class City_selection_chenge:
     def message_state_city_change(self, message):
 
         towns = types.ReplyKeyboardMarkup(resize_keyboard=True)
-        mainButton = BOT.bot.Keyboards().get_keyboard("main")
-        navigation = BOT.bot.Keyboards().get_keyboard("navigation")
+        mainButton = app.Keyboards().get_keyboard("main")
+        navigation = app.Keyboards().get_keyboard("navigation")
 
-        all_city = sorted(set(BOT.bot.Cities().get_all_cities()) - set(listCity))
+        all_city = sorted(set(app.Cities().get_all_cities()) - set(listCity))
         for city in all_city:
             towns.add(types.KeyboardButton(city))
 
@@ -63,7 +63,7 @@ class City_selection_chenge:
             log.log(message.chat.id, "user changes cities", logging.INFO)
 
         if message.html_text in all_city:
-            BOT.bot.Usercity().add_city(message.chat.id, message.html_text)
+            app.Usercity().add_city(message.chat.id, message.html_text)
             listCity.append(message.html_text)
             bot.send_message(message.chat.id, 'Если хочешь выбрать еще города, нажми ДАЛЕЕ, если нет, то нажми СТОП', reply_markup=navigation)
 
@@ -71,7 +71,7 @@ class City_selection_chenge:
             bot.send_message(message.chat.id, 'Выбери город', reply_markup=towns)
 
         if message.html_text == 'стоп':
-            BOT.bot.User_botgo().query_change_state('main', message.chat.id)
+            app.User_botgo().query_change_state('main', message.chat.id)
             bot.send_message(message.chat.id, 'Смена городов произведена успешно', reply_markup=mainButton)
             log.log(message.chat.id, "the user has successfully changed cities", logging.INFO)
             listCity.clear()

@@ -2,7 +2,7 @@ import logging
 import locale
 import datetime
 from BOT import mysql_dbconfig, log
-import BOT.bot
+import BOT.bot as app
 
 
 class Database_query:
@@ -53,8 +53,8 @@ class Database_query:
         try:
             mysql_dbconfig.cursor.execute(query)
             result = mysql_dbconfig.cursor.fetchall()
-            userId = BOT.bot.User_botgo().getUserIdByChatId(chatID)
-            city_user = BOT.bot.Cities().getCitiesByUserId(userId)
+            userId = app.User_botgo().getUserIdByChatId(chatID)
+            city_user = app.Cities().getCitiesByUserId(userId)
             for res in result:
                 if str(res[3]) in city_user:
                     locale.setlocale(locale.LC_TIME, 'ru_RU.UTF-8')
@@ -64,7 +64,7 @@ class Database_query:
                     tournament = f"Начало: {start}\n"
                     tournament += f"Конец: {end}\n\n"
                     tournament += f"Название: {res[2]}\n\n"
-                    tournament += f"Город: {BOT.bot.Cities().getCityNameById(res[3])}\n\n"
+                    tournament += f"Город: {app.Cities().getCityNameById(res[3])}\n\n"
                     tournament += f"Подробнее: {res[4]}\n"
                     array.append(tournament)
 
@@ -79,7 +79,7 @@ class Database_query:
         try:
             mysql_dbconfig.cursor.execute(query)
             result = mysql_dbconfig.cursor.fetchall()
-            city_user = BOT.bot.Cities().getCitiesByUserId(Id)
+            city_user = app.Cities().getCitiesByUserId(Id)
             for res in result:
                 if res[3] in city_user:
                     locale.setlocale(locale.LC_TIME, 'ru_RU.UTF-8')
@@ -89,7 +89,7 @@ class Database_query:
                     tournament = f"Начало: {start}\n"
                     tournament += f"Конец: {end}\n\n"
                     tournament += f"Название: {res[2]}\n\n"
-                    tournament += f"Город: {BOT.bot.Cities().getCityNameById(res[3])}\n\n"
+                    tournament += f"Город: {app.Cities().getCityNameById(res[3])}\n\n"
                     tournament += f"Подробнее: {res[4]}\n"
                     array.append(tournament)
 
