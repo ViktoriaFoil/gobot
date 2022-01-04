@@ -3,6 +3,7 @@ import mariadb
 import logging
 from log import log
 
+
 def connect_db():
     conn = mariadb.connect(
         host=os.getenv("HOST"),
@@ -14,8 +15,10 @@ def connect_db():
     log(0, "database connection", logging.INFO)
     return conn, cursor
 
+
 def close_connect_db():
     conn.close()
     cursor.close()
+
 
 conn, cursor = connect_db()
