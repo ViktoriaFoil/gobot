@@ -1,48 +1,25 @@
 import os
 import time
 import datetime
-import telebot
 import logging
-import log
-import mysql_dbconfig
-import BOT.main as main
 from threading import Thread
 
-from BOT.stages.massage_to_developer import Message_to_developer
-from BOT.stages.state_main import State_main
-from BOT.stages.city_selection_chenge import City_selection_chenge
-from BOT.stages.age_category import Age_category
+import telebot as telebot
 
-from BOT.queries_to_tables.database_query import Database_query
-from BOT.queries_to_tables.cities import Cities
-from BOT.queries_to_tables.keyboards import Keyboards
-from BOT.queries_to_tables.children_categories import Children_categories
-from BOT.queries_to_tables.user_botgo import User_botgo
-from BOT.queries_to_tables.tournament_go import Tournament_go
-from BOT.queries_to_tables.usercity import User_City
+from APP.config.mysql import Mysql
+from APP.logs.log import log
+from APP.main import Parsing
+from APP.objects.userbot import User
+from APP.queries_to_tables.tournament_go import Tournament_go
+from APP.queries_to_tables.user_botgo import User_botgo
+from APP.queries_to_tables.usercity import User_City
+from APP.stages.age_category import Age_category
+from APP.stages.city_selection_chenge import City_selection_chenge
+from APP.stages.massage_to_developer import Message_to_developer
+from APP.stages.state_main import State_main
 
 token = os.getenv("BOT")
 bot = telebot.TeleBot(token)
-
-
-class User:
-    chat_id: int
-    first_name: str
-    last_name: str
-    username: str
-    state: str
-
-    def __init__(self,
-                 chat_id: int,
-                 first_name: str,
-                 last_name: str,
-                 username: str,
-                 state: str):
-        self.chat_id = chat_id
-        self.first_name = first_name
-        self.last_name = last_name
-        self.username = username
-        self.state = state
 
 
 @bot.message_handler(content_types=['text'])
@@ -90,17 +67,17 @@ def push_message():
         for new_tournaments in Tournament_go.get_new_tournaments():
             for UserCity in User_City(message.chat.id).get_user_subscription_city():
                 if new_tournaments[3] == UserCity[1]:
-                    if (User_botgo(message.chat.id).is_user_child()):
+                    if User_botgo(message.chat.id).is_user_child():
                         for tournament in Tournament_go(message.chat.id).tournaments_for_user():
                             chatID = User_botgo(message.chat.id).get_ChatId_By_UserId()
                             bot.send_message(chatID, "В твоем городе появился турнир \n\n" + tournament)
-                            log.log(message.chat.id, "a new children's tournament has been sent", logging.INFO)
+                            log(message.chat.id, "a new children's tournament has been sent", logging.INFO)
 
                     else:  # иначе пользователь взрослый
                         for tournament in Tournament_go(message.chat.id).tournaments_for_user_adult():
                             chatID = User_botgo(message.chat.id).get_ChatId_By_UserId()
                             bot.send_message(chatID, "В твоем городе появился турнир \n\n" + tournament)
-                            log.log(message.chat.id, "new tournament sent", logging.INFO)
+                            log(message.chat.id, "new tournament sent", logging.INFO)
 
     except Exception as e:
         print(e)
@@ -110,23 +87,23 @@ def push_message():
 
 def background():
     while True:
-        main.download_page("https://gofederation.ru/tournaments/", "BOT/current.html"),
-        main.compare("BOT/current.html", "BOT/old.html"),
-        main.copy_current_to_old("BOT/old.html", "BOT/current.html"),
-        main.main(),
+        Parsing.download_page("https://gofederation.ru/tournaments/", "html/current.html"),
+        Parsing.compare("html/current.html", "html/old.html"),
+        Parsing.copy_current_to_old("html/old.html", "html/current.html"),
+        Parsing.main(),
         push_message(),
         Tournament_go.delete_old_tournaments(),
         now = datetime.datetime.now()
 
         if now.month == 12:
             nextyear = now.year + 1
-            main.download_page(f"https://gofederation.ru/tournaments?year={nextyear}", "BOT/current.html"),
-            main.compare("BOT/current.html", "BOT/old.html"),
-            main.copy_current_to_old("BOT/old.html", "BOT/current.html"),
-            main.main(),
+            Parsing.download_page(f"https://gofederation.ru/tournaments?year={nextyear}", "html/current.html"),
+            Parsing.compare("html/current.html", "html/old.html"),
+            Parsing.copy_current_to_old("html/old.html", "html/current.html"),
+            Parsing.main(),
             push_message()
 
-        log.log(0, "stop cycle for 60 seconds", logging.INFO)
+        log(0, "stop cycle for 60 seconds", logging.INFO)
         time.sleep(60)
 
 
@@ -134,5 +111,4 @@ if __name__ == '__main__':
     t1 = Thread(target=background, args=())
     t1.start()
     bot.polling()
-    mysql_dbconfig.close_connect_db()
-
+    Mysql.close_connect_db()

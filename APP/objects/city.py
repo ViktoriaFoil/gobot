@@ -1,4 +1,5 @@
-class cities:
+class City:
+
     def __init__(self):
         self.title = ""
 

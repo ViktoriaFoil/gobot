@@ -24,7 +24,11 @@ secret.json
 50-server.cnf
 my.cnf
 /tasks/main.yml
-config/tournament_go_2021-12-17.sql
-BOT/queries_to_tables/__pycache__
-BOT/stages/__pycache__
 hide
+APP/__pycache__
+APP/config/__pycache__
+APP/html
+APP/logs/__pycache__
+APP/objects/__pycache__
+APP/queries_to_tables/__pycache__
+APP/stages/__pycache__

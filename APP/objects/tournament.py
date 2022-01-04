@@ -1,5 +1,8 @@
 import datetime
+
+
 class Tournament:
+
     def __init__(self):
         self.start = ""
         self.end = ""
@@ -27,3 +30,5 @@ class Tournament:
 
     def setFlag(self, flag):
         self.flag = flag
+
+
