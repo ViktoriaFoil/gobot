@@ -6,16 +6,23 @@ import BOT.bot as app
 
 
 class Database_query:
+    user_id: int
+    chat_id: int
 
-    def simple_type_without_return(self, name_query, query):
+    def __init__(self, chat_id: int):
+        self.chat_id = chat_id
+        self.user_id = app.User_botgo(chat_id).get_UserId_By_ChatId()
+
+    @staticmethod
+    def simple_type_without_return(name_query, query):
         try:
             mysql_dbconfig.cursor.execute(query)
             mysql_dbconfig.conn.commit()
         except BaseException as e:
             log.log(0, f"error {name_query} {e}", logging.ERROR)
 
-
-    def simple_type_with_return(self, name_query, query):
+    @staticmethod
+    def simple_type_with_return(name_query, query):
         try:
             mysql_dbconfig.cursor.execute(query)
             result = mysql_dbconfig.cursor.fetchall()
@@ -24,8 +31,8 @@ class Database_query:
         except BaseException as e:
             log.log(0, f"error {name_query} {e}", logging.ERROR)
 
-
-    def simple_type_with_cycle(self, name_query, array, query):
+    @staticmethod
+    def simple_type_with_cycle(name_query, array, query):
         try:
             mysql_dbconfig.cursor.execute(query)
             result = mysql_dbconfig.cursor.fetchall()
@@ -36,8 +43,8 @@ class Database_query:
         except BaseException as e:
             log.log(0, f"error {name_query} {e}", logging.ERROR)
 
-
-    def simple_type_with_condition(self, name_query, query):
+    @staticmethod
+    def simple_type_with_condition(name_query, query):
         try:
             line = ''
             mysql_dbconfig.cursor.execute(query)
@@ -48,49 +55,64 @@ class Database_query:
         except BaseException as e:
             log.log(0, f"error {name_query} {e}", logging.ERROR)
 
-
-    def query_with_chatID(self, name_query, array, query, chatID):
+    def query_with_chatID(self, name_query, array, query):
         try:
             mysql_dbconfig.cursor.execute(query)
             result = mysql_dbconfig.cursor.fetchall()
-            userId = app.User_botgo().getUserIdByChatId(chatID)
-            city_user = app.Cities().getCitiesByUserId(userId)
-            for res in result:
-                if str(res[3]) in city_user:
-                    locale.setlocale(locale.LC_TIME, 'ru_RU.UTF-8')
-                    format_string = "%Y-%m-%d"
-                    start = datetime.datetime.strptime(f"{res[0].year}-{res[0].month}-{res[0].day}", format_string).strftime("%d %B %Y")
-                    end = datetime.datetime.strptime(f"{res[1].year}-{res[1].month}-{res[1].day}", format_string).strftime("%d %B %Y")
-                    tournament = f"Начало: {start}\n"
-                    tournament += f"Конец: {end}\n\n"
-                    tournament += f"Название: {res[2]}\n\n"
-                    tournament += f"Город: {app.Cities().getCityNameById(res[3])}\n\n"
-                    tournament += f"Подробнее: {res[4]}\n"
-                    array.append(tournament)
+            city_user = app.User_City(self.chat_id).get_cities_for_user()
 
-            mysql_dbconfig.conn.commit()
+            for city in city_user:
+                for res in result:
+                    ert = res[3]
+                    if str(ert) == str(city):
+                        locale.setlocale(locale.LC_TIME, 'ru_RU.UTF-8')
+                        format_string = "%Y-%m-%d"
+                        start = datetime.datetime.strptime(f"{res[0].year}-"
+                                                           f"{res[0].month}-"
+                                                           f"{res[0].day}",
+                                                           format_string).strftime("%d %B %Y")
+                        end = datetime.datetime.strptime(f"{res[1].year}-"
+                                                         f"{res[1].month}-"
+                                                         f"{res[1].day}",
+                                                         format_string).strftime("%d %B %Y")
+                        tournament = f"Начало: {start}\n" \
+                                     f"Конец: {end}\n\n" \
+                                     f"Название: {res[2]}\n\n" \
+                                     f"Город: {app.Cities.get_CityName_By_Id(res[3])}\n\n" \
+                                     f"Подробнее: {res[4]}\n"
+                        array.append(tournament)
+                        break
+
+                   # mysql_dbconfig.conn.commit()
+
             return array
 
         except BaseException as e:
             log.log(0, f"error {name_query} {e}", logging.ERROR)
 
-
-    def query_with_ID(self, name_query, array, query, Id):
+    @staticmethod
+    def query_with_ID(name_query, array, query, chat_id):
         try:
             mysql_dbconfig.cursor.execute(query)
             result = mysql_dbconfig.cursor.fetchall()
-            city_user = app.Cities().getCitiesByUserId(Id)
+            city_user = app.User_City(chat_id).get_cities_for_user()
             for res in result:
                 if res[3] in city_user:
                     locale.setlocale(locale.LC_TIME, 'ru_RU.UTF-8')
                     format_string = "%Y-%m-%d"
-                    start = datetime.datetime.strptime(f"{res[0].year}-{res[0].month}-{res[0].day}", format_string).strftime("%d %B %Y")
-                    end = datetime.datetime.strptime(f"{res[1].year}-{res[1].month}-{res[1].day}", format_string).strftime("%d %B %Y")
-                    tournament = f"Начало: {start}\n"
-                    tournament += f"Конец: {end}\n\n"
-                    tournament += f"Название: {res[2]}\n\n"
-                    tournament += f"Город: {app.Cities().getCityNameById(res[3])}\n\n"
-                    tournament += f"Подробнее: {res[4]}\n"
+                    start = datetime.datetime.strptime(f"{res[0].year}-"
+                                                       f"{res[0].month}-"
+                                                       f"{res[0].day}",
+                                                       format_string).strftime("%d %B %Y")
+                    end = datetime.datetime.strptime(f"{res[1].year}-"
+                                                     f"{res[1].month}-"
+                                                     f"{res[1].day}",
+                                                     format_string).strftime("%d %B %Y")
+                    tournament = f"Начало: {start}\n" \
+                                 f"Конец: {end}\n\n" \
+                                 f"Название: {res[2]}\n\n" \
+                                 f"Город: {app.Cities.get_CityName_By_Id(res[3])}\n\n" \
+                                 f"Подробнее: {res[4]}\n"
                     array.append(tournament)
 
             mysql_dbconfig.conn.commit()

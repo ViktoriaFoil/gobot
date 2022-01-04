@@ -1,42 +1,63 @@
 import BOT.bot as app
 
+
 class Cities:
-    
-    def getCitiesByUserId(self, userId):
+    user_id: int
+    chat_id: int
+
+    def __init__(self, chat_id: int):
+        self.chat_id = chat_id
+        self.user_id = app.User_botgo(chat_id).get_UserId_By_ChatId()
+
+    def get_Cities_By_UserId(self):
         name_query = "getCitiesByUserId"
         array = []
-        query_to_db = "SELECT c.id FROM Cities as c JOIN UserCity as uc ON uc.CityID = c.id JOIN user_BotGo as u ON u.id = uc.UserID WHERE uc.UserID = '" + str(userId) + "';"
-        return app.Database_query().simple_type_with_cycle(name_query, array, query_to_db)
+        query_to_db = f"SELECT c.id FROM Cities as c " \
+                      f"JOIN UserCity as uc ON uc.CityID = c.id " \
+                      f"JOIN user_BotGo as u ON u.id = uc.UserID " \
+                      f"WHERE uc.UserID = '{self.user_id}';"
+        return app.Database_query.simple_type_with_cycle(name_query, array, query_to_db)
 
-
-    def my_city(self, chatID): #запрос пользователя на город\города на которые он подписан
+    def my_city(self):
         name_query = "my_city"
         array = []
-        query_to_db = "SELECT title FROM Cities as c JOIN UserCity as uc ON uc.CityID = c.id JOIN user_BotGo as u ON u.id = uc.UserID WHERE u.id_User = '" + str(chatID) + "';"
-        return app.Database_query().simple_type_with_cycle(name_query, array, query_to_db)
+        query_to_db = f"SELECT title FROM Cities as c " \
+                      f"JOIN UserCity as uc ON uc.CityID = c.id " \
+                      f"JOIN user_BotGo as u ON u.id = uc.UserID " \
+                      f"WHERE u.chatID = '{self.chat_id}';"
+        return app.Database_query.simple_type_with_cycle(name_query, array, query_to_db)
 
-
-    def get_all_cities(self): #запрос на получение списка городов
+    @staticmethod
+    def get_all_cities():
         name_query = "get_all_cities"
         array = []
         query_to_db = "SELECT title FROM `Cities`;"
-        return app.Database_query().simple_type_with_cycle(name_query, array, query_to_db)
+        return app.Database_query.simple_type_with_cycle(name_query, array, query_to_db)
 
+    @staticmethod
+    def add_new_city(name):
+        name_query = "add_new_city"
+        query_to_db = f"INSERT INTO `Cities` (title) VALUES ('{name}')"
+        app.Database_query.simple_type_without_return(name_query, query_to_db)
 
-    def getCityIdByName(self, name): #получить id города из его названия
+    @staticmethod
+    def get_CityId_By_Name(name):
         name_query = "getCityIdByName"
-        query_to_db = "SELECT id FROM `Cities` Where title = '" + str(name) + "';"
-        return app.Database_query().simple_type_with_condition(name_query, query_to_db)
+        query_to_db = f"SELECT id FROM `Cities` Where title = '{name}';"
+        return app.Database_query.simple_type_with_condition(name_query, query_to_db)
 
-
-    def getCityNameById(self, id): # получить название города из его id
+    @staticmethod
+    def get_CityName_By_Id(city_id):
         name_query = "getCityNameById"
-        query_to_db = "SELECT title FROM `Cities` Where id = '" + str(id) + "';"
-        return app.Database_query().simple_type_with_condition(name_query, query_to_db)
+        query_to_db = f"SELECT title FROM `Cities` Where id = '{city_id}';"
+        return app.Database_query.simple_type_with_condition(name_query, query_to_db)
 
-
-    def getUsersChatByCityId(self, CityId):
+    @staticmethod
+    def get_UsersChat_By_CityId(city_id):
         name_query = "getUsersChatByCityId"
         array = []
-        query_to_db = "SELECT u.id_User FROM user_BotGo as u JOIN UserCity as uc ON uc.UserID = u.id JOIN Cities as c ON c.id = uc.CityID WHERE c.id = '" + str(CityId) + "'"
-        return app.Database_query().simple_type_with_cycle(name_query, array, query_to_db)
+        query_to_db = f"SELECT u.chatID FROM user_BotGo as u " \
+                      f"JOIN UserCity as uc ON uc.UserID = u.id " \
+                      f"JOIN Cities as c ON c.id = uc.CityID " \
+                      f"WHERE c.id = '{city_id}';"
+        return app.Database_query.simple_type_with_cycle(name_query, array, query_to_db)

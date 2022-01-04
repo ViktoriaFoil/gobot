@@ -8,20 +8,22 @@ import BOT.bot as app
 token = os.getenv("BOT")
 bot = telebot.TeleBot(token)
 
+
 class Age_category:
 
-    def message_state_age_category(self, message):
+    @staticmethod
+    def message_state_age_category(message):
         mainButton = app.Keyboards().get_keyboard("main")
 
         if message.text.lower() == "я ребенок, до 18 лет":
-            app.User_botgo().subscribe_to_child_change(message.chat.id, 1)
-            self.welcome(message.chat, mainButton)
+            app.User_botgo(message.chat.id).subscribe_to_child_change(1)
+            Age_category.welcome(message.chat.id, mainButton)
             log.log(message.chat.id, "this user is child", logging.INFO)
         if message.text.lower() == "я взрослый":
-            self.welcome(message.chat, mainButton)
+            Age_category.welcome(message.chat.id, mainButton)
             log.log(message.chat.id, "this user is adult", logging.INFO)
 
-
-    def welcome(self, chat, mainButton):
-        app.User_botgo().query_change_state("main", chat.id)
-        bot.send_message(chat.id, 'Добро пожаловать 👋, ' + chat.first_name, reply_markup=mainButton)
+    @staticmethod
+    def welcome(chat_id, mainButton):
+        app.User_botgo(chat_id).query_change_state("main")
+        bot.send_message(chat_id, 'Добро пожаловать 👋 ' , reply_markup=mainButton)

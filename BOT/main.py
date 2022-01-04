@@ -3,16 +3,19 @@ import os
 from bs4 import BeautifulSoup
 import datetime
 import logging
-import tournament, log, mysql_dbconfig
-import BOT.bot
+import tournament
+import log
+import mysql_dbconfig
+import BOT.bot as app
 
 
-def date(): #функция для вывода сегодняшней даты
+def date():
     today = datetime.now().date()
     return today
 
 
-def download_page(url, name):  #функция для скачивания актуальной версии турниров по ссылке
+# download the current version
+def download_page(url, name):
     try:
         r = requests.get(url)
         log.log(0, "download page " + url, logging.INFO)
@@ -24,7 +27,8 @@ def download_page(url, name):  #функция для скачивания ак�
         log.log(0, "error download page: " + str(e), logging.ERROR)
 
 
-def record_set(page): #функция, которая удаляет все переносы строк в файле (делает одну строку)
+# remove line breaks
+def record_set(page):
     try:
         with open(page, 'r') as f:
             content = f.read().replace('\n', '')
@@ -37,7 +41,8 @@ def record_set(page): #функция, которая удаляет все пе
         log.log(0, "error record set: " + str(e), logging.ERROR)
 
 
-def compare(current_page, old_page): #функция для сравнения старой версии турниров с новой, различия записываются в файл difference
+# write down the differences
+def compare(current_page, old_page):
     try:
         old_records = record_set(old_page)
         log.log(0, "record set: " + old_page, logging.INFO)
@@ -46,7 +51,7 @@ def compare(current_page, old_page): #функция для сравнения �
         open('BOT/difference.html', 'w').close()
         new_records = []
 
-        with open('BOT/difference.html', 'a') as f: # проверка отличий
+        with open('BOT/difference.html', 'a') as f:
             for line in current_records:
                 if line not in old_records:
                     new_records.append(line)
@@ -56,7 +61,8 @@ def compare(current_page, old_page): #функция для сравнения �
         log.log(0, "error compare: " + str(e), logging.ERROR)
 
 
-def copy_current_to_old(old_page, current_page): # функция для перезаписи старой версии файла
+# write to old page
+def copy_current_to_old(old_page, current_page):
     try:
         with open(current_page, 'r') as current:
             with open(old_page, 'w') as old:
@@ -68,40 +74,43 @@ def copy_current_to_old(old_page, current_page): # функция для пер�
         log.log(0, "error copy current to old: " + str(e), logging.ERROR)
 
 
-def check_exist_file(name): 
+def check_exist_file(name):
     if not os.path.isfile(name):
         with open(name, 'w'): pass
 
 
-def insert_tournament(tournaments): #добавляет турниры в базу данных
+# add tournaments to db
+def insert_tournament(tournaments):
     for tour in tournaments:
-        query = "INSERT INTO tournament_go (t_start, t_end, t_name, CityID, link, is_child) VALUES(%s, %s, %s, %s, %s, %s)"
+        query = "INSERT INTO tournament_go (t_start, t_end, t_name, CityID, link, is_child) " \
+                "VALUES(%s, %s, %s, %s, %s, %s)"
 
         try:
-            cityId = int(BOT.bot.Cities().getCityIdByName(tour.city))
-            mysql_dbconfig.cursor.execute(query, [tour.start, tour.end, tour.name, cityId, tour.link, tour.flag])
+            city_id = int(app.Cities.get_CityId_By_Name(tour.city))
+            mysql_dbconfig.cursor.execute(query, [tour.start, tour.end, tour.name, city_id, tour.link, tour.flag])
             mysql_dbconfig.conn.commit()
         except BaseException as e:
             log.log(0, "error insert tournament: " + str(e), logging.ERROR)
 
 
-def main(): #связывает 2 функции insert_tournament и getText
+# link two functions insert_tournament and getText
+def main():
     try:
-        tournaments = getText()
+        tournaments = get_text()
         insert_tournament(tournaments)
         log.log(0, "successful entry of new tournaments into the database", logging.INFO)
     except BaseException as e:
         log.log(0, "error main: " + str(e), logging.ERROR)
 
 
-def getText():  # получает текст для вставки новых турниров в базу данных
+# get text for tournaments
+def get_text():
     html = open('BOT/difference.html')
     root = BeautifulSoup(html, 'lxml')
     tr = root.select('tr')
     tournaments = []
 
     for t in tr:
-        td = t.select('td')
         a = t.select('a')
         tour = tournament.Tournament()
         len_array = len(t.contents)
@@ -116,7 +125,7 @@ def getText():  # получает текст для вставки новых �
 
                 t_name = t.contents[3].text
                 is_child = 0
-                for categories in BOT.bot.Children_categories().set_children_categories():
+                for categories in app.Children_categories().set_children_categories():
                     if categories[0] in t_name:
                         is_child = 1
                         tour.setFlag(is_child)
@@ -126,7 +135,21 @@ def getText():  # получает текст для вставки новых �
                 link = "https://gofederation.ru" + str(a[0].attrs['href'])
                 tour.setLink(link)
 
-                city = t.contents[4].text.replace("Сервер","").replace(", КГС","").replace(", KGS","").replace(", OGS","").replace("(КГС)","").replace("(ОГС)","").replace(", ОГС","").replace("OGS","ОГС").replace("KGS","КГС").replace(", GoQuest","").replace(" (GoQuest)","").replace("г. ","").replace("сервер, ","")
+                city = t.contents[4].text \
+                    .replace("Сервер", "") \
+                    .replace(", КГС", "") \
+                    .replace(", KGS", "") \
+                    .replace(", OGS", "") \
+                    .replace("(КГС)", "") \
+                    .replace("(ОГС)", "") \
+                    .replace(", ОГС", "") \
+                    .replace("OGS", "ОГС") \
+                    .replace("KGS", "КГС") \
+                    .replace(", GoQuest", "") \
+                    .replace(" (GoQuest)", "") \
+                    .replace("г. ", "") \
+                    .replace("сервер, ", "")
+
                 tour.setCity(city)
                 tournaments.append(tour)
 
@@ -139,7 +162,7 @@ def getText():  # получает текст для вставки новых �
 
                 t_name = t.contents[2].text
                 is_child = 0
-                for categories in BOT.bot.Children_categories().set_children_categories():
+                for categories in app.Children_categories().set_children_categories():
                     if categories[0] in t_name:
                         is_child = 1
                         tour.setFlag(is_child)
@@ -149,13 +172,26 @@ def getText():  # получает текст для вставки новых �
                 link = "https://gofederation.ru" + str(a[0].attrs['href'])
                 tour.setLink(link)
 
-                city = t.contents[3].text.replace("Сервер","").replace(", КГС","").replace(", KGS","").replace(", OGS","").replace(" (КГС)","").replace(" (ОГС)","").replace(", ОГС","").replace("OGS","ОГС").replace("KGS","КГС").replace(", GoQuest","").replace(" (GoQuest)","").replace("г. ","").replace("сервер, ","").replace(" Pandanet","").replace(", Pandanet","")
+                city = t.contents[3].text \
+                    .replace("Сервер", "") \
+                    .replace(", КГС", "") \
+                    .replace(", KGS", "") \
+                    .replace(", OGS", "") \
+                    .replace(" (КГС)", "") \
+                    .replace(" (ОГС)", "") \
+                    .replace(", ОГС", "") \
+                    .replace("OGS", "ОГС") \
+                    .replace("KGS", "КГС") \
+                    .replace(", GoQuest", "") \
+                    .replace(" (GoQuest)", "") \
+                    .replace("г. ", "") \
+                    .replace("сервер, ", "") \
+                    .replace(" Pandanet", "") \
+                    .replace(", Pandanet", "")
+
                 tour.setCity(city)
                 tournaments.append(tour)
 
             continue
 
     return tournaments
-
-    
-
