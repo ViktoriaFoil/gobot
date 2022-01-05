@@ -3,11 +3,11 @@ import telebot
 from telebot import types
 import logging
 
-from APP.logs.log import log
-from APP.queries_to_tables.cities import Cities
-from APP.queries_to_tables.keyboards import Keyboards
-from APP.queries_to_tables.user_botgo import User_botgo
-from APP.queries_to_tables.usercity import User_City
+from logs.log import log
+from queries_to_tables.cities import Cities
+from queries_to_tables.keyboards import Keyboards
+from queries_to_tables.user_botgo import User_botgo
+from queries_to_tables.usercity import User_City
 
 token = os.getenv("BOT")
 bot = telebot.TeleBot(token)

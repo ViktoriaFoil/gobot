@@ -1,11 +1,11 @@
 import logging
 
-from APP.config.mysql import Mysql
-from APP.logs.log import log
-from APP.objects.send_tournament import SendTournament
-from APP.queries_to_tables.cities import Cities
-from APP.queries_to_tables.db_query import Database_query
-from APP.queries_to_tables.user_botgo import User_botgo
+from config.mysql import cursor, conn
+from logs.log import log
+from objects.send_tournament import SendTournament
+from queries_to_tables.cities import Cities
+from queries_to_tables.db_query import Database_query
+from queries_to_tables.user_botgo import User_botgo
 
 
 class Tournament_go:
@@ -24,8 +24,8 @@ class Tournament_go:
 
             try:
                 city_id = int(Cities.get_CityId_By_Name(tour.city))
-                Mysql.cursor.execute(query, [tour.start, tour.end, tour.name, city_id, tour.link, tour.flag])
-                Mysql.conn.commit()
+                cursor.execute(query, [tour.start, tour.end, tour.name, city_id, tour.link, tour.flag])
+                conn.commit()
             except BaseException as e:
                 log(0, "error insert tournament: " + str(e), logging.ERROR)
 
@@ -39,14 +39,24 @@ class Tournament_go:
         name_query = "all_tournaments_in_city"
         array = []
         query_to_db = "SELECT t_start, t_end, t_name, CityID, link, is_child FROM tournament_go;"
-        return SendTournament.send_tournament(self.chat_id, name_query, array, query_to_db)
+        array = SendTournament.send_tournament(self.chat_id, name_query, array, query_to_db)
+
+        if array is None:
+            return []
+        else:
+            return array
 
     def get_adult_tournaments_in_city(self):
         name_query = "get_adult_tournaments_in_city"
         array = []
         query_to_db = "SELECT t_start, t_end, t_name, CityID, link, is_child FROM tournament_go " \
                       "WHERE is_child = 0;"
-        return SendTournament.send_tournament(self.chat_id, name_query, array, query_to_db)
+        array = SendTournament.send_tournament(self.chat_id, name_query, array, query_to_db)
+
+        if array is None:
+            return []
+        else:
+            return array
 
     @staticmethod
     def get_adult_tournaments_on_weekend(chat_id):

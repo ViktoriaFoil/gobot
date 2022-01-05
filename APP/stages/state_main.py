@@ -3,12 +3,12 @@ import telebot
 from telebot import types
 import logging
 
-from APP.logs.log import log
-from APP.queries_to_tables.cities import Cities
-from APP.queries_to_tables.keyboards import Keyboards
-from APP.queries_to_tables.tournament_go import Tournament_go
-from APP.queries_to_tables.user_botgo import User_botgo
-from APP.queries_to_tables.usercity import User_City
+from logs.log import log
+from queries_to_tables.cities import Cities
+from queries_to_tables.keyboards import Keyboards
+from queries_to_tables.tournament_go import Tournament_go
+from queries_to_tables.user_botgo import User_botgo
+from queries_to_tables.usercity import User_City
 
 token = os.getenv("BOT")
 bot = telebot.TeleBot(token)
@@ -40,7 +40,7 @@ class State_main:
                 message.text.lower() == "турниры в моем городе":
             if User_botgo(message.chat.id).is_user_child():
                 tournaments = Tournament_go(message.chat.id).all_tournaments_in_city()
-                if len(tournaments) == 0:
+                if tournaments is None:
                     bot.send_message(message.chat.id, 'В твоем городе пока что нет запланированных турниров :(',
                                      reply_markup=mainButton)
                 else:
@@ -51,7 +51,7 @@ class State_main:
             else:
                 tournaments = Tournament_go(message.chat.id).get_adult_tournaments_in_city()
                 log(message.chat.id, "send command /tournaments_in_my_city, is adult", logging.INFO)
-                if len(tournaments) == 0:
+                if tournaments is None:
                     bot.send_message(message.chat.id, 'В твоем городе пока что нет запланированных турниров :(',
                                      reply_markup=mainButton)
                 else:

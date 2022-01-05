@@ -2,9 +2,9 @@ import os
 import telebot
 import logging
 
-from APP.logs.log import log
-from APP.queries_to_tables.keyboards import Keyboards
-from APP.queries_to_tables.user_botgo import User_botgo
+from logs.log import log
+from queries_to_tables.keyboards import Keyboards
+from queries_to_tables.user_botgo import User_botgo
 
 token = os.getenv("BOT")
 bot = telebot.TeleBot(token)

@@ -1,5 +1,5 @@
-from APP.queries_to_tables.db_query import Database_query
-from APP.queries_to_tables.user_botgo import User_botgo
+from queries_to_tables.db_query import Database_query
+from queries_to_tables.user_botgo import User_botgo
 
 
 class Cities:

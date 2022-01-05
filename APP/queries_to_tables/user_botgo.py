@@ -1,8 +1,8 @@
 import logging
 
-from APP.config.mysql import Mysql
-from APP.logs.log import log
-from APP.queries_to_tables.db_query import Database_query
+from config.mysql import cursor, conn
+from logs.log import log
+from queries_to_tables.db_query import Database_query
 
 
 class User_botgo:
@@ -11,7 +11,7 @@ class User_botgo:
 
     def __init__(self, chat_id: int):
         self.chat_id = chat_id
-        self.user_id = User_botgo(chat_id).get_UserId_By_ChatId()
+        self.user_id = self.get_UserId_By_ChatId()
 
     def get_flag_is_child(self):
         name_query = "get_flag_is_child"
@@ -49,8 +49,8 @@ class User_botgo:
     def check_exist_user(chat_id):
         query = f"SELECT * FROM `user_BotGo` WHERE chatID='{chat_id}';"
         try:
-            Mysql.cursor.execute(query)
-            if len(Mysql.cursor.fetchall()) != 0:
+            cursor.execute(query)
+            if len(cursor.fetchall()) != 0:
                 return True
             else:
                 return False
@@ -68,15 +68,15 @@ class User_botgo:
                 f"'{users.username}', " \
                 f"'{users.state}')"
         try:
-            Mysql.cursor.execute(query, users)
-            Mysql.conn.commit()
+            cursor.execute(query, users)
+            conn.commit()
         except BaseException as e:
             log(0, f"error query_users: '{e}'", logging.ERROR)
 
     def is_user_child(self):
         try:
-            Mysql.cursor.execute(f"SELECT is_child FROM user_BotGo WHERE id = '{self.user_id}';")
-            user = Mysql.cursor.fetchall()
+            cursor.execute(f"SELECT is_child FROM user_BotGo WHERE id = '{self.user_id}';")
+            user = cursor.fetchall()
             return bool(user[0][0])
 
         except BaseException as e:

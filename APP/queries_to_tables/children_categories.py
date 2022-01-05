@@ -1,4 +1,4 @@
-from APP.queries_to_tables.db_query import Database_query
+from queries_to_tables.db_query import Database_query
 
 
 class Children_categories:

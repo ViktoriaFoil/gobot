@@ -6,17 +6,17 @@ from threading import Thread
 
 import telebot as telebot
 
-from APP.config.mysql import Mysql
-from APP.logs.log import log
-from APP.main import Parsing
-from APP.objects.userbot import User
-from APP.queries_to_tables.tournament_go import Tournament_go
-from APP.queries_to_tables.user_botgo import User_botgo
-from APP.queries_to_tables.usercity import User_City
-from APP.stages.age_category import Age_category
-from APP.stages.city_selection_chenge import City_selection_chenge
-from APP.stages.massage_to_developer import Message_to_developer
-from APP.stages.state_main import State_main
+from config.mysql import close_connect_db
+from logs.log import log
+from main import Parsing
+from objects.userbot import User
+from queries_to_tables.tournament_go import Tournament_go
+from queries_to_tables.user_botgo import User_botgo
+from queries_to_tables.usercity import User_City
+from stages.age_category import Age_category
+from stages.city_selection_chenge import City_selection_chenge
+from stages.massage_to_developer import Message_to_developer
+from stages.state_main import State_main
 
 token = os.getenv("BOT")
 bot = telebot.TeleBot(token)
@@ -33,8 +33,7 @@ def message(message):
 
     User_botgo.query_users(users)
 
-    user_botgo = User_botgo(message.chat.id)
-    SelectState = user_botgo.selectState()
+    SelectState = User_botgo(message.chat.id).selectState()
 
     if SelectState == "city_selection":
         City_selection_chenge().message_state_city_selection(message)
@@ -87,9 +86,9 @@ def push_message():
 
 def background():
     while True:
-        Parsing.download_page("https://gofederation.ru/tournaments/", "html/current.html"),
-        Parsing.compare("html/current.html", "html/old.html"),
-        Parsing.copy_current_to_old("html/old.html", "html/current.html"),
+        Parsing.download_page("https://gofederation.ru/tournaments/", "APP/html/current.html"),
+        Parsing.compare("APP/html/current.html", "APP/html/old.html"),
+        Parsing.copy_current_to_old("APP/html/old.html", "APP/html/current.html"),
         Parsing.main(),
         push_message(),
         Tournament_go.delete_old_tournaments(),
@@ -97,9 +96,9 @@ def background():
 
         if now.month == 12:
             nextyear = now.year + 1
-            Parsing.download_page(f"https://gofederation.ru/tournaments?year={nextyear}", "html/current.html"),
-            Parsing.compare("html/current.html", "html/old.html"),
-            Parsing.copy_current_to_old("html/old.html", "html/current.html"),
+            Parsing.download_page(f"https://gofederation.ru/tournaments?year={nextyear}", "APP/html/current.html"),
+            Parsing.compare("APP/html/current.html", "APP/html/old.html"),
+            Parsing.copy_current_to_old("APP/html/old.html", "APP/html/current.html"),
             Parsing.main(),
             push_message()
 
@@ -110,5 +109,5 @@ def background():
 if __name__ == '__main__':
     t1 = Thread(target=background, args=())
     t1.start()
-    bot.polling()
-    Mysql.close_connect_db()
+    bot.polling(none_stop=True)
+    close_connect_db()

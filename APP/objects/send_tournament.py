@@ -2,10 +2,11 @@ import datetime
 import locale
 import logging
 
-from APP.config.mysql import Mysql
-from APP.logs.log import log
-from APP.queries_to_tables.cities import Cities
-from APP.queries_to_tables.usercity import User_City
+from config.mysql import cursor
+from logs.log import log
+from queries_to_tables.cities import Cities
+from queries_to_tables.usercity import User_City
+LC_TIME="ru_RU.UTF-8"
 
 
 class SendTournament:
@@ -30,8 +31,8 @@ class SendTournament:
     @staticmethod
     def send_tournament(chat_id, name_query, array, query):
         try:
-            Mysql.cursor.execute(query)
-            result = Mysql.cursor.fetchall()
+            cursor.execute(query)
+            result = cursor.fetchall()
             city_user = User_City(chat_id).get_cities_for_user()
 
             for city in city_user:
