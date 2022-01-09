@@ -4,7 +4,7 @@ import datetime
 import logging
 from threading import Thread
 
-import telebot as telebot
+import telebot
 
 from config.mysql import close_connect_db
 from logs.log import log
@@ -61,37 +61,41 @@ def message(message):
 # =======================================================================================================
 # =======================================================================================================
 
+
 def push_message():
     try:
-        for new_tournaments in Tournament_go.get_new_tournaments():
-            for UserCity in User_City(message.chat.id).get_user_subscription_city():
-                if new_tournaments[3] == UserCity[1]:
-                    if User_botgo(message.chat.id).is_user_child():
-                        for tournament in Tournament_go(message.chat.id).tournaments_for_user():
-                            chatID = User_botgo(message.chat.id).get_ChatId_By_UserId()
-                            bot.send_message(chatID, "В твоем городе появился турнир \n\n" + tournament)
-                            log(message.chat.id, "a new children's tournament has been sent", logging.INFO)
+        all_users = User_botgo.all_users()
+        for chatID in all_users:
+            if User_botgo(chatID).is_user_child():
+                for tournament in Tournament_go(chatID).tournaments_for_user():
+                    bot.send_message(chatID, "В твоем городе появился турнир \n\n" + tournament)
+                    log(chatID, "a new children's tournament has been sent", logging.INFO)
+            else:
+                for tournament in Tournament_go(chatID).tournaments_for_user_adult():
+                    bot.send_message(chatID, "В твоем городе появился турнир \n\n" + tournament)
+                    log(chatID, "new tournament sent", logging.INFO)
 
-                    else:  # иначе пользователь взрослый
-                        for tournament in Tournament_go(message.chat.id).tournaments_for_user_adult():
-                            chatID = User_botgo(message.chat.id).get_ChatId_By_UserId()
-                            bot.send_message(chatID, "В твоем городе появился турнир \n\n" + tournament)
-                            log(message.chat.id, "new tournament sent", logging.INFO)
-
-    except Exception as e:
-        print(e)
     except AssertionError():
         print("!!!!!!! user has been blocked !!!!!!!")
+    except BaseException as e:
+        log(0, f"error {e}", logging.ERROR)
 
 
 def background():
     while True:
-        Parsing.download_page("https://gofederation.ru/tournaments/", "APP/html/current.html"),
-        Parsing.compare("APP/html/current.html", "APP/html/old.html"),
-        Parsing.copy_current_to_old("APP/html/old.html", "APP/html/current.html"),
-        Parsing.main(),
+        Parsing.download_page("https://gofederation.ru/tournaments/", "html/current.html"),
+        Parsing.compare("html/current.html", "html/old.html"),
+        Parsing.copy_current_to_old("html/old.html", "html/current.html"),
+
+        if Tournament_go.number_of_entries():
+            Parsing.main(True)
+        else:
+            Parsing.main(False)
+
         push_message(),
         Tournament_go.delete_old_tournaments(),
+        Tournament_go.check_details(),
+        Tournament_go.change_new_to_notified(),
         now = datetime.datetime.now()
 
         if now.month == 12:
@@ -99,8 +103,9 @@ def background():
             Parsing.download_page(f"https://gofederation.ru/tournaments?year={nextyear}", "APP/html/current.html"),
             Parsing.compare("APP/html/current.html", "APP/html/old.html"),
             Parsing.copy_current_to_old("APP/html/old.html", "APP/html/current.html"),
-            Parsing.main(),
-            push_message()
+            Parsing.main(False),
+            push_message(),
+            Tournament_go.change_new_to_notified()
 
         log(0, "stop cycle for 60 seconds", logging.INFO)
         time.sleep(60)

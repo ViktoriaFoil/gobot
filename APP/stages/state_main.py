@@ -40,20 +40,20 @@ class State_main:
                 message.text.lower() == "турниры в моем городе":
             if User_botgo(message.chat.id).is_user_child():
                 tournaments = Tournament_go(message.chat.id).all_tournaments_in_city()
-                if tournaments is None:
-                    bot.send_message(message.chat.id, 'В твоем городе пока что нет запланированных турниров :(',
-                                     reply_markup=mainButton)
+                log(message.chat.id, "send command /tournaments_in_my_city, is adult", logging.INFO)
+                getmessage = "В твоем городе пока что нет запланированных турниров :("
+                if not tournaments:
+                    bot.send_message(message.chat.id, getmessage, reply_markup=mainButton)
                 else:
                     for tournament in tournaments:
                         bot.send_message(message.chat.id, f"Турнир в твоем городе 🏆... \n\n {tournament}",
                                          reply_markup=mainButton)
-                log(message.chat.id, "send command /tournaments_in_my_city, is child", logging.INFO)
             else:
                 tournaments = Tournament_go(message.chat.id).get_adult_tournaments_in_city()
                 log(message.chat.id, "send command /tournaments_in_my_city, is adult", logging.INFO)
-                if tournaments is None:
-                    bot.send_message(message.chat.id, 'В твоем городе пока что нет запланированных турниров :(',
-                                     reply_markup=mainButton)
+                getmessage = "В твоем городе пока что нет запланированных турниров :("
+                if not tournaments:
+                    bot.send_message(message.chat.id, getmessage, reply_markup=mainButton)
                 else:
                     for tournament in tournaments:
                         bot.send_message(message.chat.id, f"Турнир в твоем городе 🏆... \n\n {tournament}",

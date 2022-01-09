@@ -6,6 +6,7 @@ from queries_to_tables.user_botgo import User_botgo
 class User_City:
     user_id: int
     chat_id: int
+    city_id: list[int]
 
     def __init__(self, chat_id: int):
         self.chat_id = chat_id
@@ -31,6 +32,10 @@ class User_City:
 
     def get_user_subscription_city(self):
         name_query = "get_user_subscription_city"
-        query_to_db = f"SELECT CityID FROM UserCity WHERE UserID = " \
-                      f"'(select id from user_BotGo WHERE chatID = '{self.chat_id}');"
-        return Database_query.simple_type_with_return(name_query, query_to_db)
+        "SELECT CityID FROM tournament_go "
+        query_to_db = f"SELECT CityID FROM UserCity " \
+                      f"WHERE CityID in (SELECT CityID FROM tournament_go) " \
+                      f"AND UserID = (select id from user_BotGo WHERE chatID = '{self.chat_id}');"
+        array = []
+        self.city_id = Database_query.simple_type_with_cycle(name_query, array, query_to_db)
+        return self.city_id

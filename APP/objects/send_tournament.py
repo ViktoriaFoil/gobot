@@ -33,7 +33,7 @@ class SendTournament:
         try:
             cursor.execute(query)
             result = cursor.fetchall()
-            city_user = User_City(chat_id).get_cities_for_user()
+            city_user = User_City(chat_id).get_user_subscription_city()
 
             for city in city_user:
                 for res in result:
@@ -54,7 +54,6 @@ class SendTournament:
                                      f"Город: {tournament.city}\n\n" \
                                      f"Подробнее: {tournament.link}\n"
                         array.append(tournament)
-                        break
 
             return array
 

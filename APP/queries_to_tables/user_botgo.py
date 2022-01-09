@@ -18,6 +18,14 @@ class User_botgo:
         query_to_db = f"SELECT is_child FROM user_BotGo WHERE chatID = '{self.chat_id}';"
         return Database_query.simple_type_with_return(name_query, query_to_db)
 
+    @staticmethod
+    def all_users():
+        name_query = "all_users"
+        query_to_db = "SELECT chatID FROM user_BotGo;"
+        array = []
+        result = Database_query.simple_type_with_cycle(name_query, array, query_to_db)
+        return result
+
     def selectState(self):
         name_query = "selectState"
         query_to_db = f"SELECT state_user FROM user_BotGo WHERE chatID = {self.chat_id};"

@@ -47,3 +47,15 @@ class Database_query:
             return str(line)
         except BaseException as e:
             log(0, f"error {name_query} {e}", logging.ERROR)
+
+    @staticmethod
+    def return_true_or_false(name_query, query):
+        try:
+            cursor.execute(query)
+            result = cursor.fetchall()
+            if result[0][0] == 0:
+                return True
+            else:
+                return False
+        except BaseException as e:
+            log(0, f"error {name_query} {e}", logging.ERROR)
