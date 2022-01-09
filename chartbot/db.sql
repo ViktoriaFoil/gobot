@@ -1,4 +1,9 @@
 
+
+--
+-- Table structure for table `Cities`
+--
+
 DROP TABLE IF EXISTS `Cities`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
@@ -18,31 +23,6 @@ CREATE TABLE `Cities` (
 INSERT INTO `Cities` VALUES (48,'Badukpop'),(50,'GoQuest'),(49,'Pandanet'),(59,'Амурск'),(7,'Архангельск'),(8,'Астрахань'),(9,'Барнаул'),(10,'Великий Новгород'),(11,'Владивосток'),(12,'Волгоград'),(13,'Вологда'),(14,'Екатеринбург'),(4,'Жуковский'),(15,'Ижевск'),(16,'Казань'),(17,'Калининград'),(5,'Калуга'),(6,'Калужская обл.'),(46,'КГС'),(18,'Киров'),(19,'Краснодар'),(20,'Красноярск'),(21,'Курган'),(53,'Ленинградская обл.'),(22,'Магадан'),(3,'Моск.обл.'),(1,'Москва'),(60,'Мытищи'),(23,'Нижний Новгород'),(58,'Николаевск-на-Амуре'),(24,'Новосибирск'),(25,'Новоуральск'),(47,'ОГС'),(57,'Омск'),(26,'Пермь'),(27,'Петрозаводск'),(28,'Самара'),(2,'Санкт-Петербург'),(29,'Севастополь'),(30,'Симферополь'),(31,'Суздаль'),(32,'Тверь'),(38,'Тольятти'),(34,'Томск'),(44,'Тула'),(39,'Уфа'),(40,'Феодосия'),(41,'Хабаровск'),(42,'Челябинск'),(43,'Ярославль');
 /*!40000 ALTER TABLE `Cities` ENABLE KEYS */;
 
---
--- Table structure for table `UserCity`
---
-
-DROP TABLE IF EXISTS `UserCity`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `UserCity` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `UserID` int(11) DEFAULT NULL,
-  `CityID` int(11) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `UserID` (`UserID`),
-  KEY `CityID` (`CityID`),
-  CONSTRAINT `UserCity_ibfk_1` FOREIGN KEY (`UserID`) REFERENCES `user_BotGo` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `UserCity_ibfk_2` FOREIGN KEY (`CityID`) REFERENCES `Cities` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `UserCity`
---
-
-/*!40000 ALTER TABLE `UserCity` DISABLE KEYS */;
-/*!40000 ALTER TABLE `UserCity` ENABLE KEYS */;
 
 --
 -- Table structure for table `children_categories`
@@ -110,7 +90,7 @@ CREATE TABLE `tournament_go` (
   UNIQUE KEY `link` (`link`),
   KEY `CityID` (`CityID`),
   CONSTRAINT `tournament_go_ibfk_1` FOREIGN KEY (`CityID`) REFERENCES `Cities` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -137,7 +117,7 @@ CREATE TABLE `user_BotGo` (
   `is_child` tinyint(1) DEFAULT 0,
   PRIMARY KEY (`id`),
   UNIQUE KEY `chatID` (`chatID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -146,6 +126,35 @@ CREATE TABLE `user_BotGo` (
 
 /*!40000 ALTER TABLE `user_BotGo` DISABLE KEYS */;
 /*!40000 ALTER TABLE `user_BotGo` ENABLE KEYS */;
+
+
+--
+-- Table structure for table `UserCity`
+--
+
+DROP TABLE IF EXISTS `UserCity`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `UserCity` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `UserID` int(11) DEFAULT NULL,
+  `CityID` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `UserID` (`UserID`),
+  KEY `CityID` (`CityID`),
+  CONSTRAINT `UserCity_ibfk_1` FOREIGN KEY (`UserID`) REFERENCES `user_BotGo` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `UserCity_ibfk_2` FOREIGN KEY (`CityID`) REFERENCES `Cities` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `UserCity`
+--
+
+/*!40000 ALTER TABLE `UserCity` DISABLE KEYS */;
+/*!40000 ALTER TABLE `UserCity` ENABLE KEYS */;
+
+
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -156,4 +165,4 @@ CREATE TABLE `user_BotGo` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-01-09 12:02:52
+-- Dump completed on 2022-01-09 19:02:44
