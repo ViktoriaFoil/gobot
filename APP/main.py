@@ -54,10 +54,10 @@ class Parsing:
             log(0, "record set: " + old_page, logging.INFO)
             current_records = Parsing.record_set(current_page)
             log(0, "record set " + current_page, logging.INFO)
-            open('html/difference.html', 'w').close()
+            open('APP/html/difference.html', 'w').close()
             new_records = []
 
-            with open('html/difference.html', 'a') as f:
+            with open('APP/html/difference.html', 'a') as f:
                 for line in current_records:
                     if line not in old_records:
                         new_records.append(line)
@@ -130,7 +130,7 @@ class Parsing:
     # get text for tournaments
     @staticmethod
     def get_text():
-        html = open('html/difference.html')
+        html = open('APP/html/difference.html')
         root = BeautifulSoup(html, 'lxml')
         tr = root.select('tr')
         tournaments = []
@@ -197,7 +197,7 @@ class Parsing:
 
     @staticmethod
     def get_text_first():
-        html = open('html/current.html')
+        html = open('APP/html/current.html')
         root = BeautifulSoup(html, 'lxml')
         tr = root.select('tr')
         tournaments = []
