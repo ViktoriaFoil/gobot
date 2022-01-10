@@ -80,6 +80,28 @@ def push_message():
     except BaseException as e:
         log(0, f"error {e}", logging.ERROR)
 
+
+def notification_of_details():
+    try:
+        all_users = User_botgo.all_users()
+        for chatID in all_users:
+            if User_botgo(chatID).is_user_child():
+                for tournament in Tournament_go(chatID).details_of_tournament_exist_for_user():
+                    bot.send_message(chatID, "У этого турнира появились подробности \n\n" + tournament)
+                    Tournament_go.update_tournament_details()
+                    log(chatID, "details children's tournament has been sent", logging.INFO)
+            else:
+                for tournament in Tournament_go(chatID).details_of_tournament_exist_for_user_adult():
+                    bot.send_message(chatID, "У этого турнира появились подробности \n\n" + tournament)
+                    Tournament_go.update_tournament_details()
+                    log(chatID, "details tournament sent", logging.INFO)
+
+    except AssertionError():
+        print("!!!!!!! user has been blocked !!!!!!!")
+    except BaseException as e:
+        log(0, f"error {e}", logging.ERROR)
+
+
 def background():
     while True:
         Parsing.download_page("https://gofederation.ru/tournaments/", "APP/html/current.html"),
@@ -91,10 +113,16 @@ def background():
         else:
             Parsing.main(False)
 
+        # рассылка новых турниров
         push_message(),
-        Tournament_go.delete_old_tournaments(),
-        Tournament_go.check_details(),
+        # поменять статус новых турниров на обычный
         Tournament_go.change_new_to_notified(),
+        # удалить старые турниры
+        Tournament_go.delete_old_tournaments(),
+        # проверка, появились ли подробности турниров
+        Tournament_go.check_details(),
+        # если есть детали, то отправить
+        notification_of_details(),
         now = datetime.datetime.now()
 
         if now.month == 12:

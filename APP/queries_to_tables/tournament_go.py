@@ -29,8 +29,8 @@ class Tournament_go:
         return Database_query.return_true_or_false(name_query, query_to_db)
 
     @staticmethod
-    def update_tournament_details(link):
-        query_to_db = f"UPDATE tournament_go SET details = 'exist' WHERE link = '{link}';"
+    def update_tournament_details():
+        query_to_db = f"UPDATE tournament_go SET details = 'exist' WHERE details = 'for_mailing';"
         name_query = "update_tournament_details"
         Database_query.simple_type_without_return(name_query, query_to_db)
 
@@ -56,6 +56,12 @@ class Tournament_go:
         else:
             return None
 
+    @staticmethod
+    def update_tournament_details_for_notification(link):
+        query_to_db = f"UPDATE tournament_go SET details = 'for_mailing' WHERE link = '{link}';"
+        name_query = "update_tournament_details"
+        Database_query.simple_type_without_return(name_query, query_to_db)
+
     def get_adult_tournaments_in_city(self):
         name_query = "get_adult_tournaments_in_city"
         array = []
@@ -74,12 +80,26 @@ class Tournament_go:
                       "WHERE is_new = 'yes';"
         return SendTournament.send_tournament(self.chat_id, name_query, array, query_to_db)
 
+    def details_of_tournament_exist_for_user(self):
+        name_query = "details_of_tournament_exist_for_user"
+        array = []
+        query_to_db = "SELECT t_start, t_end, t_name, CityID, link, is_child FROM tournament_go " \
+                      "WHERE details = 'for_mailing';"
+        return SendTournament.send_tournament(self.chat_id, name_query, array, query_to_db)
+
     def tournaments_for_user_adult(self):
         name_query = "tournaments_for_user_adult"
         array = []
         query_to_db = f"SELECT t_start, t_end, t_name, CityID, link, is_child FROM tournament_go " \
                       f"WHERE is_child = 0 " \
                       f"AND is_new = 'yes';"
+        return SendTournament.send_tournament(self.chat_id, name_query, array, query_to_db)
+
+    def details_of_tournament_exist_for_user_adult(self):
+        name_query = "details_of_tournament_exist_for_user"
+        array = []
+        query_to_db = "SELECT t_start, t_end, t_name, CityID, link, is_child FROM tournament_go " \
+                      "WHERE details = 'for_mailing' AND is_child = 0;"
         return SendTournament.send_tournament(self.chat_id, name_query, array, query_to_db)
 
     @staticmethod
@@ -91,5 +111,5 @@ class Tournament_go:
             Parsing.download_page(tournament[0], file)
             Parsing.record_set(file)
             if Parsing.check_string(string, file):
-                Tournament_go.update_tournament_details(tournament[0])
+                Tournament_go.update_tournament_details_for_notification(tournament[0])
             os.system(r'cat /dev/null>APP/html/check_details.html')
