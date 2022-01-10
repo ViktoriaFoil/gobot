@@ -82,9 +82,9 @@ def push_message():
 
 def background():
     while True:
-        Parsing.download_page("https://gofederation.ru/tournaments/", "html/current.html"),
-        Parsing.compare("html/current.html", "html/old.html"),
-        Parsing.copy_current_to_old("html/old.html", "html/current.html"),
+        Parsing.download_page("https://gofederation.ru/tournaments/", "APP/html/current.html"),
+        Parsing.compare("APP/html/current.html", "APP/html/old.html"),
+        Parsing.copy_current_to_old("APP/html/old.html", "APP/html/current.html"),
 
         if Tournament_go.number_of_entries():
             Parsing.main(True)
@@ -99,9 +99,9 @@ def background():
 
         if now.month == 12:
             nextyear = now.year + 1
-            Parsing.download_page(f"https://gofederation.ru/tournaments?year={nextyear}", "html/current.html"),
-            Parsing.compare("html/current.html", "html/old.html"),
-            Parsing.copy_current_to_old("html/old.html", "html/current.html"),
+            Parsing.download_page(f"https://gofederation.ru/tournaments?year={nextyear}", "APP/html/current.html"),
+            Parsing.compare("APP/html/current.html", "APP/html/old.html"),
+            Parsing.copy_current_to_old("APP/html/old.html", "APP/html/current.html"),
             Parsing.main(False),
             push_message(),
             Tournament_go.change_new_to_notified()

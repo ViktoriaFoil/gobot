@@ -85,11 +85,11 @@ class Tournament_go:
     @staticmethod
     def check_details():
         tournaments_without_details = Tournament_go.all_tournaments_without_details()
-        file = 'html/check_details.html'
+        file = 'APP/html/check_details.html'
         string = 'предварительная регистрация'
         for tournament in tournaments_without_details:
             Parsing.download_page(tournament[0], file)
             Parsing.record_set(file)
             if Parsing.check_string(string, file):
                 Tournament_go.update_tournament_details(tournament[0])
-            os.system(r'cat /dev/null>html/check_details.html')
+            os.system(r'cat /dev/null>APP/html/check_details.html')
