@@ -33,3 +33,4 @@ APP/objects/__pycache__
 APP/queries_to_tables/__pycache__
 APP/stages/__pycache__
 ansible/tasks
+metricbeat

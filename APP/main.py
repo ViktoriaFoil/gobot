@@ -4,6 +4,8 @@ import re
 import requests
 import logging
 from bs4 import BeautifulSoup
+from mariadb import IntegrityError
+from urllib3 import HTTPSConnectionPool
 
 from config.mysql import cursor, conn
 from queries_to_tables.cities import Cities
@@ -29,6 +31,8 @@ class Parsing:
                 output_file.write(r.text.replace("&nbsp;-&nbsp;", ""))
                 log(0, "save url to " + name, logging.INFO)
             r.close()
+        except HTTPSConnectionPool as e:
+            log(0, "error download page2: " + str(e), logging.ERROR)
         except Exception as e:
             log(0, "error download page: " + str(e), logging.ERROR)
 
@@ -108,6 +112,8 @@ class Parsing:
                 cursor.execute(query, [tour.start, tour.end, tour.name, city_id, tour.link, tour.flag])
                 conn.commit()
             except BaseException as e:
+                log(0, f"error insert tournament: {e}", logging.ERROR)
+            except IntegrityError as e:
                 log(0, f"error insert tournament: {e}", logging.ERROR)
 
     @staticmethod
