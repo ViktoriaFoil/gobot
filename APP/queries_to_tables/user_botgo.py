@@ -2,6 +2,7 @@ import logging
 
 from config.mysql import cursor, conn
 from logs.log import log
+from mariadb import DatabaseError
 from queries_to_tables.db_query import Database_query
 
 
@@ -80,6 +81,8 @@ class User_botgo:
             conn.commit()
         except BaseException as e:
             log(0, f"error query_users: '{e}'", logging.ERROR)
+        except DatabaseError as e:
+            log(0, f"error {e}", logging.ERROR)
 
     def is_user_child(self):
         try:

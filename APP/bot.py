@@ -12,7 +12,6 @@ from main import Parsing
 from objects.userbot import User
 from queries_to_tables.tournament_go import Tournament_go
 from queries_to_tables.user_botgo import User_botgo
-from queries_to_tables.usercity import User_City
 from stages.age_category import Age_category
 from stages.city_selection_chenge import City_selection_chenge
 from stages.massage_to_developer import Message_to_developer
@@ -123,6 +122,7 @@ def background():
         Tournament_go.check_details(),
         # если есть детали, то отправить
         notification_of_details(),
+
         now = datetime.datetime.now()
 
         if now.month == 12:
@@ -130,9 +130,7 @@ def background():
             Parsing.download_page(f"https://gofederation.ru/tournaments?year={nextyear}", "APP/html/current.html"),
             Parsing.compare("APP/html/current.html", "APP/html/old.html"),
             Parsing.copy_current_to_old("APP/html/old.html", "APP/html/current.html"),
-            Parsing.main(False),
-            push_message(),
-            Tournament_go.change_new_to_notified()
+            Parsing.main(False)
 
         log(0, "stop cycle for 60 seconds", logging.INFO)
         time.sleep(60)

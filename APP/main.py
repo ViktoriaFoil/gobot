@@ -4,9 +4,8 @@ import re
 import requests
 import logging
 from bs4 import BeautifulSoup
-from mariadb import IntegrityError
-from urllib3 import HTTPSConnectionPool
-
+from httplib2 import ServerNotFoundError
+from mariadb import DatabaseError
 from config.mysql import cursor, conn
 from queries_to_tables.cities import Cities
 from logs.log import log
@@ -31,10 +30,14 @@ class Parsing:
                 output_file.write(r.text.replace("&nbsp;-&nbsp;", ""))
                 log(0, "save url to " + name, logging.INFO)
             r.close()
-        except HTTPSConnectionPool as e:
-            log(0, "error download page2: " + str(e), logging.ERROR)
+        except OSError as e:
+            log(0, "There is no network connection: " + str(e), logging.ERROR)
         except Exception as e:
             log(0, "error download page: " + str(e), logging.ERROR)
+        except ServerNotFoundError as e:
+            log(0, "The server is unavailable, reconnecting: " + str(e), logging.ERROR)
+        except ConnectionRefusedError as e:
+            log(0, "Connection is broken, reconnect: " + str(e), logging.ERROR)
 
     # remove line breaks
     @staticmethod
@@ -48,7 +51,9 @@ class Parsing:
                     result_set.add(str(item))
                 return result_set
         except Exception as e:
-            log(0, "error record set: " + str(e), logging.ERROR)
+            log(0, f"error record set: {e}", logging.ERROR)
+        except FileNotFoundError as e:
+            log(0, f"error {e}", logging.ERROR)
 
     # write down the differences
     @staticmethod
@@ -67,8 +72,8 @@ class Parsing:
                         new_records.append(line)
                 f.writelines(new_records)
                 log(0, "save to difference.html", logging.INFO)
-        except Exception as e:
-            log(0, "error compare: " + str(e), logging.ERROR)
+        except FileNotFoundError as e:
+            log(0, f"error {e}", logging.ERROR)
 
     # write to old page
     @staticmethod
@@ -82,11 +87,8 @@ class Parsing:
                     log(0, "information overwritten", logging.INFO)
         except Exception as e:
             log(0, "error copy current to old: " + str(e), logging.ERROR)
-
-    # @staticmethod
-    # def check_exist_file(name):
-    #    if not os.path.isfile(name):
-    #        with open(name, 'w'): pass
+        except FileNotFoundError as e:
+            log(0, f"error {e}", logging.ERROR)
 
     # link two functions insert_tournament and getText
     @staticmethod
@@ -98,8 +100,8 @@ class Parsing:
                 tournaments = Parsing.get_text()
             Parsing.insert_tournament(tournaments)
             log(0, "successful entry of new tournaments into the database", logging.INFO)
-        except BaseException as e:
-            log(0, "error main: " + str(e), logging.ERROR)
+        except FileNotFoundError as e:
+            log(0, f"error {e}", logging.ERROR)
 
     @staticmethod
     def insert_tournament(tournaments):
@@ -113,8 +115,8 @@ class Parsing:
                 conn.commit()
             except BaseException as e:
                 log(0, f"error insert tournament: {e}", logging.ERROR)
-            except IntegrityError as e:
-                log(0, f"error insert tournament: {e}", logging.ERROR)
+            except DatabaseError as e:
+                log(0, f"error {e}", logging.ERROR)
 
     @staticmethod
     def make_correct_format(namecity):

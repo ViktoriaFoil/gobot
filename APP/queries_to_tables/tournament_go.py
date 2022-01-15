@@ -1,3 +1,4 @@
+import logging
 import os
 
 from objects.send_tournament import SendTournament
@@ -5,6 +6,8 @@ from queries_to_tables.db_query import Database_query
 from queries_to_tables.user_botgo import User_botgo
 
 from main import Parsing
+
+from APP.logs.log import log
 
 
 class Tournament_go:
@@ -104,12 +107,15 @@ class Tournament_go:
 
     @staticmethod
     def check_details():
-        tournaments_without_details = Tournament_go.all_tournaments_without_details()
-        file = 'APP/html/check_details.html'
-        string = 'предварительная регистрация'
-        for tournament in tournaments_without_details:
-            Parsing.download_page(tournament[0], file)
-            Parsing.record_set(file)
-            if Parsing.check_string(string, file):
-                Tournament_go.update_tournament_details_for_notification(tournament[0])
-            os.system(r'cat /dev/null>APP/html/check_details.html')
+        try:
+            tournaments_without_details = Tournament_go.all_tournaments_without_details()
+            file = 'APP/html/check_details.html'
+            string = 'предварительная регистрация'
+            for tournament in tournaments_without_details:
+                Parsing.download_page(tournament[0], file)
+                Parsing.record_set(file)
+                if Parsing.check_string(string, file):
+                    Tournament_go.update_tournament_details_for_notification(tournament[0])
+                os.system(r'cat /dev/null>APP/html/check_details.html')
+        except FileNotFoundError as e:
+            log(0, f"error {e}", logging.ERROR)
