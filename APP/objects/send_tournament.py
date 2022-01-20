@@ -57,5 +57,5 @@ class SendTournament:
 
             return array
 
-        except BaseException as e:
+        except Exception as e:
             log(0, f"error {name_query} {e}", logging.ERROR)

@@ -6,9 +6,9 @@ import logging
 from logs.log import log
 from queries_to_tables.cities import Cities
 from queries_to_tables.keyboards import Keyboards
-from queries_to_tables.tournament_go import Tournament_go
 from queries_to_tables.user_botgo import User_botgo
 from queries_to_tables.usercity import User_City
+from queries_to_tables.tournament_go import Tournament_go
 
 token = os.getenv("BOT")
 bot = telebot.TeleBot(token)
@@ -18,7 +18,7 @@ class State_main:
 
     @staticmethod
     def message_state_main(message):
-
+        user_id = User_botgo(message.chat.id).get_UserId_By_ChatId()
         towns = types.ReplyKeyboardMarkup(resize_keyboard=True)
         mainButton = Keyboards.get_keyboard("main")
 
@@ -39,25 +39,22 @@ class State_main:
                 message.text.lower() == "турниры в моем городе" or \
                 message.text.lower() == "турниры в моем городе":
             if User_botgo(message.chat.id).is_user_child():
-                tournaments = Tournament_go(message.chat.id).all_tournaments_in_city()
-                log(message.chat.id, "send command /tournaments_in_my_city, is adult", logging.INFO)
-                getmessage = "В твоем городе пока что нет запланированных турниров :("
-                if not tournaments:
-                    bot.send_message(message.chat.id, getmessage, reply_markup=mainButton)
+                name_tour = Keyboards.keyboard_with_tournament_names(user_id)
+                all_names = Tournament_go(message.chat.id).all_tour_names()
+                if not all_names:
+                    bot.send_message(message.chat.id, f"В твоем городе пока что нет запланированных турниров")
                 else:
-                    for tournament in tournaments:
-                        bot.send_message(message.chat.id, f"Турнир в твоем городе 🏆... \n\n {tournament}",
-                                         reply_markup=mainButton)
+                    User_botgo(message.chat.id).query_change_state("tournaments_in_my_city")
+                    bot.send_message(message.chat.id, 'Выбери название', reply_markup=name_tour)
             else:
-                tournaments = Tournament_go(message.chat.id).get_adult_tournaments_in_city()
-                log(message.chat.id, "send command /tournaments_in_my_city, is adult", logging.INFO)
-                getmessage = "В твоем городе пока что нет запланированных турниров :("
-                if not tournaments:
-                    bot.send_message(message.chat.id, getmessage, reply_markup=mainButton)
+                name_tour = Keyboards.keyboard_with_tournament_names_adult(user_id)
+                all_names = Tournament_go(message.chat.id).all_tour_names_adult()
+                if not all_names:
+                    bot.send_message(message.chat.id, f"В твоем городе пока что нет запланированных турниров")
                 else:
-                    for tournament in tournaments:
-                        bot.send_message(message.chat.id, f"Турнир в твоем городе 🏆... \n\n {tournament}",
-                                         reply_markup=mainButton)
+                    User_botgo(message.chat.id).query_change_state("tournaments_in_my_city")
+                    bot.send_message(message.chat.id, 'Выбери название', reply_markup=name_tour)
+
             return
 
         if message.text.lower() == "/message_to_developer" or \

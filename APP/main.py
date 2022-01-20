@@ -4,7 +4,6 @@ import re
 import requests
 import logging
 from bs4 import BeautifulSoup
-from httplib2 import ServerNotFoundError
 from mariadb import DatabaseError
 from config.mysql import cursor, conn
 from queries_to_tables.cities import Cities
@@ -34,8 +33,6 @@ class Parsing:
             log(0, "There is no network connection: " + str(e), logging.ERROR)
         except Exception as e:
             log(0, "error download page: " + str(e), logging.ERROR)
-        except ServerNotFoundError as e:
-            log(0, "The server is unavailable, reconnecting: " + str(e), logging.ERROR)
         except ConnectionRefusedError as e:
             log(0, "Connection is broken, reconnect: " + str(e), logging.ERROR)
 

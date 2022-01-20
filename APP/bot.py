@@ -16,6 +16,7 @@ from stages.age_category import Age_category
 from stages.city_selection_chenge import City_selection_chenge
 from stages.massage_to_developer import Message_to_developer
 from stages.state_main import State_main
+from stages.tournaments_in_my_city import Tournament_in_my_city
 
 token = os.getenv("BOT")
 bot = telebot.TeleBot(token)
@@ -47,7 +48,11 @@ def message(message):
         return
 
     if SelectState == "main":
-        State_main.message_state_main(message)
+        State_main().message_state_main(message)
+        return
+
+    if SelectState == "tournaments_in_my_city":
+        Tournament_in_my_city.in_my_city(message.chat.id, message)
         return
 
     if SelectState == "message_to_developer" and \
@@ -87,12 +92,10 @@ def notification_of_details():
             if User_botgo(chatID).is_user_child():
                 for tournament in Tournament_go(chatID).details_of_tournament_exist_for_user():
                     bot.send_message(chatID, "У этого турнира появились подробности \n\n" + tournament)
-                    Tournament_go.update_tournament_details()
                     log(chatID, "details children's tournament has been sent", logging.INFO)
             else:
                 for tournament in Tournament_go(chatID).details_of_tournament_exist_for_user_adult():
                     bot.send_message(chatID, "У этого турнира появились подробности \n\n" + tournament)
-                    Tournament_go.update_tournament_details()
                     log(chatID, "details tournament sent", logging.INFO)
 
     except AssertionError():
@@ -122,6 +125,7 @@ def background():
         Tournament_go.check_details(),
         # если есть детали, то отправить
         notification_of_details(),
+        Tournament_go.update_tournament_details(),
 
         now = datetime.datetime.now()
 
@@ -132,8 +136,8 @@ def background():
             Parsing.copy_current_to_old("APP/html/old.html", "APP/html/current.html"),
             Parsing.main(False)
 
-        log(0, "stop cycle for 60 seconds", logging.INFO)
-        time.sleep(60)
+        log(0, "stop cycle for 300 seconds", logging.INFO)
+        time.sleep(300)
 
 
 if __name__ == '__main__':

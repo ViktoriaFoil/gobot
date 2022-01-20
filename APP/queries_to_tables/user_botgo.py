@@ -63,7 +63,7 @@ class User_botgo:
                 return True
             else:
                 return False
-        except BaseException as e:
+        except Exception as e:
             log(0, f"error check_exist_user: '{e}'", logging.ERROR)
 
     @staticmethod
@@ -79,7 +79,7 @@ class User_botgo:
         try:
             cursor.execute(query, users)
             conn.commit()
-        except BaseException as e:
+        except Exception as e:
             log(0, f"error query_users: '{e}'", logging.ERROR)
         except DatabaseError as e:
             log(0, f"error {e}", logging.ERROR)
@@ -90,5 +90,5 @@ class User_botgo:
             user = cursor.fetchall()
             return bool(user[0][0])
 
-        except BaseException as e:
+        except Exception as e:
             log(0, f"error is_user_child: '{e}'", logging.ERROR)

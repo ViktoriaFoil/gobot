@@ -7,7 +7,7 @@ from queries_to_tables.user_botgo import User_botgo
 
 from main import Parsing
 
-from APP.logs.log import log
+from logs.log import log
 
 
 class Tournament_go:
@@ -18,12 +18,42 @@ class Tournament_go:
         self.chat_id = chat_id
         self.user_id = User_botgo(chat_id).get_UserId_By_ChatId()
 
+    def specified_name(self, text):
+        name_query = "specified_name"
+        array = []
+        query_to_db = f"SELECT t_start, t_end, t_name, CityID, link, is_child " \
+                      f"FROM tournament_go WHERE t_name = '{text}';"
+        array = SendTournament.send_tournament(self.chat_id, name_query, array, query_to_db)
+        return array
+
+    def specified_name_adult(self, text):
+        name_query = "specified_name_adult"
+        array = []
+        query_to_db = f"SELECT t_start, t_end, t_name, CityID, link, is_child " \
+                      f"FROM tournament_go WHERE t_name = '{text}' AND is_child = 0;"
+        array = SendTournament.send_tournament(self.chat_id, name_query, array, query_to_db)
+        return array
+
     @staticmethod
     def all_tournaments_without_details():
         name_query = "all_tournaments_without_details"
         all_without_details = "SELECT link FROM tournament_go WHERE details = 'not_exist';"
         array = Database_query.simple_type_with_return(name_query, all_without_details)
         return array
+
+    def all_tour_names_adult(self):
+        name_query = "all_tour_names"
+        query_to_db = f"SELECT t_name FROM tournament_go " \
+                      f"WHERE CityID in (SELECT CityID FROM UserCity WHERE UserID = '{self.user_id}') AND is_child = 0;"
+        array = []
+        return Database_query.simple_type_with_cycle(name_query, array, query_to_db)
+
+    def all_tour_names(self):
+        name_query = "all_tour_names"
+        query_to_db = f"SELECT t_name FROM tournament_go " \
+                      f"WHERE CityID in (SELECT CityID FROM UserCity WHERE UserID = '{self.user_id}');"
+        array = []
+        return Database_query.simple_type_with_cycle(name_query, array, query_to_db)
 
     @staticmethod
     def number_of_entries():

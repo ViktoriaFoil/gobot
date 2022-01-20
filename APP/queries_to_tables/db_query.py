@@ -2,6 +2,7 @@ import logging
 
 from config.mysql import cursor, conn
 from logs.log import log
+from telebot import types
 
 
 class Database_query:
@@ -11,7 +12,7 @@ class Database_query:
         try:
             cursor.execute(query)
             conn.commit()
-        except BaseException as e:
+        except Exception as e:
             log(0, f"error {name_query} {e}", logging.ERROR)
 
     @staticmethod
@@ -21,8 +22,20 @@ class Database_query:
             result = cursor.fetchall()
             conn.commit()
             return result
-        except BaseException as e:
+        except Exception as e:
             log(0, f"error {name_query} {e}", logging.ERROR)
+
+    @staticmethod
+    def return_keys(name_query, query):
+        try:
+            keyb = types.ReplyKeyboardMarkup(resize_keyboard=True)
+            cursor.execute(query)
+            keyboard = cursor.fetchall()
+            for key in keyboard:
+                keyb.add(key[0])
+            return keyb
+        except Exception as e:
+            log(0, f"{name_query}: {e}", logging.ERROR)
 
     @staticmethod
     def simple_type_with_cycle(name_query, array, query):
@@ -33,7 +46,7 @@ class Database_query:
                 array.append(item[0])
             conn.commit()
             return array
-        except BaseException as e:
+        except Exception as e:
             log(0, f"error {name_query} {e}", logging.ERROR)
 
     @staticmethod
@@ -45,7 +58,7 @@ class Database_query:
             if any(result):
                 line = result[0][0]
             return str(line)
-        except BaseException as e:
+        except Exception as e:
             log(0, f"error {name_query} {e}", logging.ERROR)
 
     @staticmethod
@@ -57,5 +70,5 @@ class Database_query:
                 return True
             else:
                 return False
-        except BaseException as e:
+        except Exception as e:
             log(0, f"error {name_query} {e}", logging.ERROR)
