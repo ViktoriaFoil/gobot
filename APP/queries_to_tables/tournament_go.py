@@ -79,16 +79,6 @@ class Tournament_go:
         query_to_db = "DELETE FROM tournament_go WHERE t_start < current_date;"
         Database_query.simple_type_without_return(name_query, query_to_db)
 
-    def all_tournaments_in_city(self):
-        name_query = "all_tournaments_in_city"
-        array = []
-        query_to_db = "SELECT t_start, t_end, t_name, CityID, link, is_child FROM tournament_go;"
-        array = SendTournament.send_tournament(self.chat_id, name_query, array, query_to_db)
-        if len(array) > 0:
-            return array
-        else:
-            return None
-
     @staticmethod
     def update_tournament_details_for_notification(link):
         query_to_db = f"UPDATE tournament_go SET details = 'for_mailing' WHERE link = '{link}';"
@@ -147,5 +137,6 @@ class Tournament_go:
                 if Parsing.check_string(string, file):
                     Tournament_go.update_tournament_details_for_notification(tournament[0])
                 os.system(r'cat /dev/null>APP/html/check_details.html')
+            #log(0, "checking the details is over", logging.INFO)
         except FileNotFoundError as e:
             log(0, f"error {e}", logging.ERROR)

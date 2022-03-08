@@ -24,10 +24,8 @@ class Parsing:
     def download_page(url, name):
         try:
             r = requests.get(url)
-            log(0, "download page " + url, logging.INFO)
             with open(name, 'w') as output_file:
                 output_file.write(r.text.replace("&nbsp;-&nbsp;", ""))
-                log(0, "save url to " + name, logging.INFO)
             r.close()
         except OSError as e:
             log(0, "There is no network connection: " + str(e), logging.ERROR)
@@ -129,7 +127,8 @@ class Parsing:
             .replace(", GoQuest", "") \
             .replace(" (GoQuest)", "") \
             .replace("г. ", "") \
-            .replace("сервер, ", "")
+            .replace("сервер, ", "") \
+            .replace("г ", "")
         return correct_format
 
     # get text for tournaments
